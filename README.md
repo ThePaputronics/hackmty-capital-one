@@ -13,8 +13,10 @@ skills, engineering strategies, and agent evaluation cases.
 | `.codex/agents/` | 25 specialist agents, coordinated by Miku |
 | `.agents/skills/` | 11 reusable workflows discovered by Codex |
 | `docs/ai/knowledge/` | Shared contracts, strategies, and templates |
+| `docs/ai/knowledge/infrastructure.md` | Shared deployment host knowledge and safety boundaries |
 | `.codex/agent-tests/cases/` | Adversarial cases for agent evaluation |
 | `scripts/validate-ai-config.py` | Static validation for the shared setup |
+| `INSTALL-CODEX-GLOBAL.md` | Agent-readable global installation procedure |
 
 ## Use
 
@@ -37,6 +39,10 @@ skills, engineering strategies, and agent evaluation cases.
 
 Miku is a technical orchestration role. This shared version intentionally has
 no fictional-character or anime personality instructions.
+
+To install the same resources globally for another Codex user, ask Codex to
+review [`INSTALL-CODEX-GLOBAL.md`](INSTALL-CODEX-GLOBAL.md) and follow its
+conflict-safe installation procedure.
 
 ## Portability
 

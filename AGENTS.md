@@ -5,6 +5,11 @@ live in `.agents/skills`, and supporting engineering guidance lives in
 `docs/ai/knowledge`. Load only the role, skill, and references relevant to the
 current task.
 
+Before planning deployment or remote-server work, read
+`docs/ai/knowledge/infrastructure.md`. Treat the server as shared infrastructure
+and require verified connection details, ownership, rollback, and approval
+before changing remote state.
+
 All agent responses, documentation, plans, code comments, commit messages, and
 user-facing text must be written in English unless the user explicitly asks
 for another language.
