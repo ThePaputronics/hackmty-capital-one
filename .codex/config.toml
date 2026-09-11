@@ -1,0 +1,104 @@
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 6
+
+[agents."accessibility"]
+description = "Performs read-only accessibility reviews for web interfaces, user flows, keyboard behavior, semantics, and assistive technology support."
+config_file = "./agents/accessibility.toml"
+
+[agents."agent-security"]
+description = "Reviews AI-agent prompts, tools, permissions, context handling, prompt injection, excessive agency, and model-output safety."
+config_file = "./agents/agent-security.toml"
+
+[agents."api-contract"]
+description = "Reviews and designs API, event, schema, and compatibility contracts across frontend, backend, and repositories without owning implementation."
+config_file = "./agents/api-contract.toml"
+
+[agents."architect"]
+description = "Designs maintainable software architecture, service boundaries, contracts, migrations, and traceable technical decisions."
+config_file = "./agents/architect.toml"
+
+[agents."backend-dotnet"]
+description = "Specializes in .NET and C# backend services, ASP.NET APIs, async workflows, persistence, and integrations using verified project patterns."
+config_file = "./agents/backend-dotnet.toml"
+
+[agents."backend-go"]
+description = "Specializes in Go services, APIs, concurrency, persistence, tooling, and integrations using idiomatic repository-verified patterns."
+config_file = "./agents/backend-go.toml"
+
+[agents."backend-node"]
+description = "Specializes in Node.js and TypeScript backend services, APIs, workers, and integrations using repository-verified frameworks and tooling."
+config_file = "./agents/backend-node.toml"
+
+[agents."backend-python"]
+description = "Specializes in Python backend services, APIs, workers, data access, packaging, and integrations using verified project conventions."
+config_file = "./agents/backend-python.toml"
+
+[agents."backend"]
+description = "Designs and implements reliable backend services, APIs, persistence, jobs, integrations, and operational behavior."
+config_file = "./agents/backend.toml"
+
+[agents."database"]
+description = "Specializes in relational and document data modeling, query behavior, migrations, integrity, performance, and safe operational changes."
+config_file = "./agents/database.toml"
+
+[agents."devops"]
+description = "Designs and implements reliable CI/CD, containers, infrastructure, deployment, observability, and release workflows."
+config_file = "./agents/devops.toml"
+
+[agents."documentation"]
+description = "Creates and maintains accurate technical, project, repository, operational, and decision documentation without duplicating facts."
+config_file = "./agents/documentation.toml"
+
+[agents."frontend-react"]
+description = "Specializes in React and TypeScript frontend work with accessible UI, predictable state, resilient data flows, and measured performance."
+config_file = "./agents/frontend-react.toml"
+
+[agents."frontend"]
+description = "Designs, implements, and reviews accessible frontend interfaces, client state, user flows, and browser behavior."
+config_file = "./agents/frontend.toml"
+
+[agents."implementer"]
+description = "Implements scoped cross-cutting software changes with type safety, error visibility, compatibility, and targeted validation."
+config_file = "./agents/implementer.toml"
+
+[agents."miku"]
+description = "Principal software engineering agent that coordinates context, delegation, implementation, validation, and delivery."
+config_file = "./agents/miku.toml"
+
+[agents."performance"]
+description = "Performs evidence-based performance analysis across frontend, backend, data access, builds, and runtime behavior without speculative optimization."
+config_file = "./agents/performance.toml"
+
+[agents."privacy-compliance"]
+description = "Reviews privacy, data governance, retention, regulated data handling, and compliance controls without approving legal exceptions."
+config_file = "./agents/privacy-compliance.toml"
+
+[agents."product-domain"]
+description = "Defines product behavior, domain rules, priorities, stakeholder acceptance, and business decisions without inventing technical implementation."
+config_file = "./agents/product-domain.toml"
+
+[agents."release-incident"]
+description = "Specializes in release readiness, progressive delivery, incident response, SLOs, rollback, and post-incident learning."
+config_file = "./agents/release-incident.toml"
+
+[agents."repo-analysis"]
+description = "Builds evidence-based repository context including structure, architecture, dependencies, workflows, testing, and deployment."
+config_file = "./agents/repo-analysis.toml"
+
+[agents."requirements-analyst"]
+description = "Converts product goals into precise scope, constraints, acceptance criteria, and open questions before implementation."
+config_file = "./agents/requirements-analyst.toml"
+
+[agents."reviewer"]
+description = "Reviews implementation diffs and TestSpec artifacts for high-confidence bugs, regressions, security issues, and behavior drift without editing files."
+config_file = "./agents/reviewer.toml"
+
+[agents."security-review"]
+description = "Performs read-only, high-confidence security reviews for exploitable vulnerabilities, secrets, authorization, and unsafe data flows."
+config_file = "./agents/security-review.toml"
+
+[agents."tester"]
+description = "Selects, runs, and diagnoses the smallest relevant existing tests, linters, type-checks, and builds."
+config_file = "./agents/tester.toml"
+

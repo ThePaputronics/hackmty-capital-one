@@ -1,0 +1,45 @@
+# hackmty-capital-one
+
+This repository includes a shared Codex engineering environment. Anyone who
+clones it with Codex can use the same project instructions, specialist agents,
+skills, engineering strategies, and agent evaluation cases.
+
+## Codex resources
+
+| Path | Purpose |
+| --- | --- |
+| `AGENTS.md` | Repository-wide engineering and delivery rules |
+| `.codex/config.toml` | Registers the custom subagent roles |
+| `.codex/agents/` | 25 specialist agents, coordinated by Miku |
+| `.agents/skills/` | 11 reusable workflows discovered by Codex |
+| `docs/ai/knowledge/` | Shared contracts, strategies, and templates |
+| `.codex/agent-tests/cases/` | Adversarial cases for agent evaluation |
+| `scripts/validate-ai-config.py` | Static validation for the shared setup |
+
+## Use
+
+1. Clone the repository and open it as a trusted Codex project.
+2. Start a new Codex session from the repository root so `AGENTS.md`, project
+   configuration, agents, and skills are discovered.
+3. Ask Codex to use a role when useful, for example:
+
+   ```text
+   Use the miku agent to coordinate this implementation.
+   ```
+
+4. In Codex CLI, use `/agent` to inspect or switch to an active subagent
+   thread.
+5. Validate the catalog after changing an agent or skill:
+
+   ```bash
+   python3 scripts/validate-ai-config.py
+   ```
+
+Miku is a technical orchestration role. This shared version intentionally has
+no fictional-character or anime personality instructions.
+
+## Portability
+
+All internal references are repository-relative. Personal credentials,
+authentication state, conversation history, logs, caches, and machine-specific
+Codex settings are intentionally excluded.
