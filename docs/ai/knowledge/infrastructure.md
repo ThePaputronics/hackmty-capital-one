@@ -10,6 +10,35 @@ service elsewhere.
 This document records operational facts and boundaries. It does not grant
 permission to deploy, restart, delete, migrate, or otherwise change the server.
 
+## Authorized remote scope
+
+`/srv/hackathon` is the only authorized filesystem path for this project.
+Every remote file, directory, configuration file, deployment artifact, log,
+volume, backup, temporary file, generated file, socket, and secret reference
+managed by the project must remain at this path or below it.
+
+Agents and operators must never create, edit, overwrite, move, delete, link,
+mount, change permissions, or change ownership outside `/srv/hackathon`.
+Before a mutating command, resolve and validate every target. The normalized,
+canonical target must equal `/srv/hackathon` or begin with
+`/srv/hackathon/`. A symlink whose resolved destination leaves this boundary is
+outside scope and must not be followed for mutation.
+
+The boundary also excludes host-level changes whose configuration or state is
+stored elsewhere, including:
+
+- operating-system packages and repositories;
+- `/etc`, `/var`, `/opt`, `/usr`, home directories, and other `/srv` paths;
+- systemd units and global service configuration;
+- firewall, routing, DNS, SSH, users, groups, sudo, and kernel settings;
+- global reverse-proxy and certificate configuration;
+- Docker daemon configuration, images, containers, networks, named volumes,
+  and other daemon-managed state outside `/srv/hackathon`.
+
+If a deployment requires any excluded change, stop and request a new explicit
+infrastructure decision. Do not treat general deployment authorization as an
+exception to this boundary.
+
 ## Connection
 
 ```bash
@@ -92,6 +121,10 @@ Observed through read-only SSH commands on 2026-09-11:
 | --- | --- |
 | Hostname | `vmi3556704` |
 | Login user | `gady` |
+| Authorized project path | `/srv/hackathon` |
+| Path owner and group | `root:hackathon` |
+| Path mode | `drwxrwsr-x` |
+| Login path access | Read, write, and traverse verified |
 | Operating system | Debian GNU/Linux 13 |
 | Kernel | Linux 6.12.38 cloud amd64 |
 | CPU | 6 logical processors |

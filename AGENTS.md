@@ -10,6 +10,14 @@ Before planning deployment or remote-server work, read
 and require verified connection details, ownership, rollback, and approval
 before changing remote state.
 
+The only authorized remote filesystem scope is `/srv/hackathon`. Never create,
+edit, move, delete, link, mount, or change permissions or ownership outside
+that directory. Resolve target paths before every remote mutation and stop if
+the resolved path is not `/srv/hackathon` or one of its descendants. System
+packages, systemd units, global container-daemon state, firewall rules, SSH
+configuration, global reverse-proxy configuration, and other host-level state
+are outside the authorized scope.
+
 All agent responses, documentation, plans, code comments, commit messages, and
 user-facing text must be written in English unless the user explicitly asks
 for another language.
