@@ -1,5 +1,6 @@
 name = "backend-python"
 description = "Specializes in Python backend services, APIs, workers, data access, packaging, and integrations using verified project conventions."
+model_reasoning_effort = "medium"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

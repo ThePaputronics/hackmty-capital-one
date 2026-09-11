@@ -1,6 +1,6 @@
 [agents]
 enabled = true
-max_concurrent_threads_per_session = 6
+max_concurrent_threads_per_session = 3
 
 [agents."accessibility"]
 description = "Performs read-only accessibility reviews for web interfaces, user flows, keyboard behavior, semantics, and assistive technology support."
@@ -101,4 +101,3 @@ config_file = "./agents/security-review.toml"
 [agents."tester"]
 description = "Selects, runs, and diagnoses the smallest relevant existing tests, linters, type-checks, and builds."
 config_file = "./agents/tester.toml"
-

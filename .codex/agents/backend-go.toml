@@ -1,5 +1,6 @@
 name = "backend-go"
 description = "Specializes in Go services, APIs, concurrency, persistence, tooling, and integrations using idiomatic repository-verified patterns."
+model_reasoning_effort = "high"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

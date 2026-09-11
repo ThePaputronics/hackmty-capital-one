@@ -42,10 +42,11 @@ Every specialist must include `Knowledge candidates` in its handoff when it
 discovers information worth preserving. Read-only specialists do not edit or
 push the KB.
 
-Miku owns the synchronization decision and integration. Miku may update the KB
-directly or assign one bounded, non-overlapping task to `documentation`.
-Only Miku or the assigned documentation agent may create and push a KB sync
-commit. Other agents return evidence and proposed destinations.
+The active main thread owns the synchronization decision and integration. It
+may update the KB directly or assign one bounded, non-overlapping task to
+`documentation`. Only the main thread or its assigned documentation agent may
+create and push a KB sync commit. Other agents return evidence and proposed
+destinations.
 
 ## Authorized Git workflow
 
@@ -64,7 +65,8 @@ Before pushing:
 4. Update the existing authoritative document instead of creating a duplicate.
 5. Cite observed repository paths, commands, or owner decisions for material
    facts. Redact sensitive values.
-6. Run `python3 scripts/validate-ai-config.py`, `git diff --check`, and a secret
+6. Run `python3 scripts/validate-ai-config.py`,
+   `python3 scripts/evaluate-agent-strategy.py`, `git diff --check`, and a secret
    pattern scan appropriate to the changed files.
 7. Review the exact staged paths and ensure they are limited to KB surfaces.
 8. Commit with a focused message such as `docs(kb): record deployment boundary`.

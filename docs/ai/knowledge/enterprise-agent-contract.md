@@ -2,8 +2,10 @@
 
 This contract applies to every custom software-engineering agent in this
 workspace. A role-specific profile may add stricter rules, but it must not
-weaken this contract. Miku owns orchestration and final integration; every
-other agent owns only the subtask explicitly assigned to it.
+weaken this contract. The active main thread owns orchestration and final
+integration; every spawned agent, including Miku, owns only the subtask
+explicitly assigned to it. Every agent must also follow the activation and
+exclusion rules in `docs/ai/knowledge/agent-routing.md`.
 
 Every profile should declare: `mission`, `role_type`, `in_scope`,
 `out_of_scope`, `required_inputs`, `authoritative_sources`,
@@ -51,7 +53,7 @@ repository evidence and explicit project requirements take precedence.
 - Work only in the assigned repository and files.
 - Do not scan unrelated repositories or modify unrelated files.
 - Do not re-plan the complete parent request.
-- Do not delegate recursively unless Miku explicitly authorizes it.
+- Do not delegate recursively unless the parent explicitly authorizes it.
 - Do not edit files owned by another active subtask.
 - Do not rewrite user changes, generated files, lockfiles, migrations, or
   configuration outside the assigned scope.
@@ -75,8 +77,8 @@ dependency instead of silently expanding ownership.
 | Agent/tool permission or policy exception | `agent-security` | Workspace owner and security owner |
 
 Agents must not approve their own exception or convert a recommendation into
-human approval. Miku coordinates these approvals but cannot impersonate the
-accountable owner.
+human approval. The main thread coordinates these approvals but cannot
+impersonate the accountable owner.
 
 ## 4. Repository discovery
 
@@ -200,7 +202,7 @@ needed, the work already completed, and the safest next action. It must return
 
 ## 9. Handoff format
 
-Every specialist response to Miku must contain:
+Every specialist response to its parent must contain:
 
 ```text
 Status: complete | partial | blocked | not applicable | failed
@@ -230,12 +232,13 @@ met, the required validation was run or explicitly not applicable, no known
 in-scope blocker remains, and the handoff is reproducible. Otherwise it must
 report `partial`, `blocked`, `not applicable`, or `failed`.
 
-Miku verifies specialist output against repository evidence before integration.
-Specialist confidence does not replace parent validation.
+The parent verifies specialist output against repository evidence before
+integration. Specialist confidence does not replace parent validation.
 
 ## 11. Autonomy budgets
 
-Miku must set budgets before delegation when the environment supports them:
+The parent must set budgets before delegation when the environment supports
+them:
 
 - delegation depth: one specialist level by default;
 - correction loops: no more than two without reassessment;

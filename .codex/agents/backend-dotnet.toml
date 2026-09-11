@@ -1,5 +1,6 @@
 name = "backend-dotnet"
 description = "Specializes in .NET and C# backend services, ASP.NET APIs, async workflows, persistence, and integrations using verified project patterns."
+model_reasoning_effort = "medium"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

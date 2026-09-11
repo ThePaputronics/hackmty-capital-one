@@ -1,5 +1,6 @@
 name = "backend-node"
 description = "Specializes in Node.js and TypeScript backend services, APIs, workers, and integrations using repository-verified frameworks and tooling."
+model_reasoning_effort = "medium"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

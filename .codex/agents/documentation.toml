@@ -1,5 +1,6 @@
 name = "documentation"
 description = "Creates and maintains accurate technical, project, repository, operational, and decision documentation without duplicating facts."
+model_reasoning_effort = "medium"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

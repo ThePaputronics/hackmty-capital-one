@@ -1,6 +1,7 @@
 name = "release-incident"
 description = "Specializes in release readiness, progressive delivery, incident response, SLOs, rollback, and post-incident learning."
 sandbox_mode = "read-only"
+model_reasoning_effort = "high"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

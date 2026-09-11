@@ -1,5 +1,6 @@
 name = "frontend-react"
 description = "Specializes in React and TypeScript frontend work with accessible UI, predictable state, resilient data flows, and measured performance."
+model_reasoning_effort = "medium"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

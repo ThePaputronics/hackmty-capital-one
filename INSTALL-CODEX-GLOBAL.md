@@ -44,7 +44,8 @@ Codex must:
    conflicts instead of silently choosing one.
 10. Never copy `.git`, credentials, SSH keys, environment files, logs, session
     databases, caches, or machine-specific authentication state.
-11. Run `python3 scripts/validate-ai-config.py` in the repository and validate
+11. Run `python3 scripts/validate-ai-config.py` and
+    `python3 scripts/evaluate-agent-strategy.py` in the repository and validate
     every installed skill with Codex's available skill validator.
 12. Report installed paths, backups, conflicts, validation results, and restart
     requirements.
@@ -73,10 +74,12 @@ Run:
 
 ```bash
 python3 scripts/validate-ai-config.py
+python3 scripts/evaluate-agent-strategy.py
 ```
 
 Expected result:
 
 ```text
 Codex configuration is valid: 25 agents, 11 skills, and 3 evaluation suites.
+Agent strategy is valid: 25 routed profiles, concurrency 3, parent authority, and tester artifact boundaries.
 ```

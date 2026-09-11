@@ -1,6 +1,7 @@
 name = "performance"
 description = "Performs evidence-based performance analysis across frontend, backend, data access, builds, and runtime behavior without speculative optimization."
 sandbox_mode = "read-only"
+model_reasoning_effort = "high"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

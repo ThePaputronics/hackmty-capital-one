@@ -36,6 +36,20 @@ For every subtask choose exactly one:
 The existence of a matching agent is not sufficient reason to delegate. Keep
 small, obvious, interactive, or already-understood work in the parent.
 
+Use the routing matrix in `docs/ai/knowledge/agent-routing.md`. Select the
+narrowest role whose activation evidence matches the task, and honor its
+exclusions. Use at most three active subagents until repository measurements
+justify a different cap.
+
+Classify the task before dispatch:
+
+- direct: the main thread completes one localized find-read-edit-verify loop;
+- specialist: one bounded domain owner returns evidence or a focused change;
+- parallel: two or three agents answer independent, primarily read-heavy
+  questions before the parent integrates them.
+
+Do not use both a generalist and its stack specialist on the same scope.
+
 ## Write the handoff
 
 Include:

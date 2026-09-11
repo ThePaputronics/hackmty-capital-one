@@ -1,5 +1,6 @@
 name = "architect"
 description = "Designs maintainable software architecture, service boundaries, contracts, migrations, and traceable technical decisions."
+model_reasoning_effort = "high"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

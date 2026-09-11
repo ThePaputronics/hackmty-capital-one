@@ -1,6 +1,7 @@
 name = "database"
 description = "Specializes in relational and document data modeling, query behavior, migrations, integrity, performance, and safe operational changes."
 sandbox_mode = "read-only"
+model_reasoning_effort = "high"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

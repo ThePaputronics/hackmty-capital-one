@@ -1,6 +1,7 @@
 name = "privacy-compliance"
 description = "Reviews privacy, data governance, retention, regulated data handling, and compliance controls without approving legal exceptions."
 sandbox_mode = "read-only"
+model_reasoning_effort = "high"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

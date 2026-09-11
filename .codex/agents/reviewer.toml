@@ -1,6 +1,7 @@
 name = "reviewer"
 description = "Reviews implementation diffs and TestSpec artifacts for high-confidence bugs, regressions, security issues, and behavior drift without editing files."
 sandbox_mode = "read-only"
+model_reasoning_effort = "high"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

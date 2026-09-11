@@ -16,8 +16,10 @@ skills, engineering strategies, and agent evaluation cases.
 | `docs/ai/knowledge/infrastructure.md` | Shared deployment host knowledge and safety boundaries |
 | `docs/ai/knowledge/knowledge-sync.md` | Rules for verified, conflict-safe KB synchronization |
 | `docs/ai/knowledge/agent-strategy-review.md` | Evidence-based review and roadmap for agent usage |
+| `docs/ai/knowledge/agent-routing.md` | Activation, exclusion, effort, and coordination rules for all agents |
 | `.codex/agent-tests/cases/` | Adversarial cases for agent evaluation |
 | `scripts/validate-ai-config.py` | Static validation for the shared setup |
+| `scripts/evaluate-agent-strategy.py` | Executable checks for routing, authority, concurrency, and tester boundaries |
 | `INSTALL-CODEX-GLOBAL.md` | Agent-readable global installation procedure |
 
 ## Use
@@ -37,6 +39,7 @@ skills, engineering strategies, and agent evaluation cases.
 
    ```bash
    python3 scripts/validate-ai-config.py
+   python3 scripts/evaluate-agent-strategy.py
    ```
 
 Miku is a technical orchestration role. This shared version intentionally has

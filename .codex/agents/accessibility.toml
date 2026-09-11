@@ -1,6 +1,7 @@
 name = "accessibility"
 description = "Performs read-only accessibility reviews for web interfaces, user flows, keyboard behavior, semantics, and assistive technology support."
 sandbox_mode = "read-only"
+model_reasoning_effort = "high"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

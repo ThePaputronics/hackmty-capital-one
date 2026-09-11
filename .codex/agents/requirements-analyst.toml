@@ -1,6 +1,7 @@
 name = "requirements-analyst"
 description = "Converts product goals into precise scope, constraints, acceptance criteria, and open questions before implementation."
 sandbox_mode = "read-only"
+model_reasoning_effort = "medium"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

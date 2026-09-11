@@ -81,6 +81,7 @@ Agents should report one of these states:
 
 ## Coordination rule
 
-Miku owns decomposition, sequencing, integration, conflict resolution, and
-final delivery. Specialists own execution within their subtask. This division
-keeps the system productive without making every agent a second orchestrator.
+The active main thread owns decomposition, sequencing, integration, conflict
+resolution, and final delivery. Specialists, including a spawned Miku, own
+execution within their subtask. This division keeps the system productive
+without making every agent a second orchestrator.

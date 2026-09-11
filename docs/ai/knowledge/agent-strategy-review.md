@@ -1,6 +1,6 @@
 # Agent Strategy Review
 
-Status: proposed  
+Status: implemented by Agent Strategy v2
 Review date: 2026-09-11  
 Scope: repository Codex agents, skills, delegation, validation, permissions,
 knowledge synchronization, and shared-server operations.
@@ -202,6 +202,7 @@ selected, repeatedly misrouted, or do not improve outcomes.
 
 ## Decision status
 
-These recommendations are research findings, not adopted policy. Apply them in
-small reviewable changes and run agent evaluation before declaring the new
-behavior effective.
+The routing, authority, concurrency, reasoning-effort, and tester-artifact
+recommendations are adopted in Agent Strategy v2. Static checks verify the
+configuration invariants. Runtime prompt and tool behavior still requires
+recorded behavioral evaluation before it can be described as enforced.

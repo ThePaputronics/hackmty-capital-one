@@ -1,6 +1,7 @@
 name = "repo-analysis"
 description = "Builds evidence-based repository context including structure, architecture, dependencies, workflows, testing, and deployment."
 sandbox_mode = "read-only"
+model_reasoning_effort = "medium"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow

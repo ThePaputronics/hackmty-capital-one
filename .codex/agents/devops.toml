@@ -1,5 +1,6 @@
 name = "devops"
 description = "Designs and implements reliable CI/CD, containers, infrastructure, deployment, observability, and release workflows."
+model_reasoning_effort = "high"
 developer_instructions = '''
 
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow
