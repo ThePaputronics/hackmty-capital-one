@@ -211,6 +211,7 @@ Changes:
 Validation:
 Risks and assumptions:
 Blockers or follow-up:
+Knowledge candidates:
 ```
 
 `Evidence` must identify relevant files, symbols, commands, or outputs.
@@ -218,6 +219,9 @@ Blockers or follow-up:
 separate passed checks from skipped, unavailable, or failed checks.
 `Risks and assumptions` must include compatibility, security, data, and
 operational concerns relevant to the subtask.
+`Knowledge candidates` must list durable verified facts, decisions, or
+procedures that should update the shared KB, with evidence and a proposed
+authoritative destination. Use `None` when the task produced no candidate.
 
 ## 10. Completion rule
 

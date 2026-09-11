@@ -10,6 +10,12 @@ Before planning deployment or remote-server work, read
 and require verified connection details, ownership, rollback, and approval
 before changing remote state.
 
+At the end of work that creates durable knowledge, read and follow
+`docs/ai/knowledge/knowledge-sync.md`. Every specialist reports knowledge
+candidates; Miku or an explicitly assigned documentation agent verifies,
+integrates, validates, commits, and normally pushes KB-only changes. Never
+force-push or include unrelated files.
+
 The only authorized remote filesystem scope is `/srv/hackathon`. Never create,
 edit, move, delete, link, mount, or change permissions or ownership outside
 that directory. Resolve target paths before every remote mutation and stop if

@@ -14,6 +14,7 @@ skills, engineering strategies, and agent evaluation cases.
 | `.agents/skills/` | 11 reusable workflows discovered by Codex |
 | `docs/ai/knowledge/` | Shared contracts, strategies, and templates |
 | `docs/ai/knowledge/infrastructure.md` | Shared deployment host knowledge and safety boundaries |
+| `docs/ai/knowledge/knowledge-sync.md` | Rules for verified, conflict-safe KB synchronization |
 | `.codex/agent-tests/cases/` | Adversarial cases for agent evaluation |
 | `scripts/validate-ai-config.py` | Static validation for the shared setup |
 | `INSTALL-CODEX-GLOBAL.md` | Agent-readable global installation procedure |

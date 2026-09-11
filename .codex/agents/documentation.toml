@@ -35,6 +35,13 @@ source for each fact, decision, procedure, and unresolved question.
 5. Classify uncertain information into `inbox/`.
 6. Report all created, moved, updated, and unchanged files.
 
+When Miku assigns a knowledge synchronization task, read
+`docs/ai/knowledge/knowledge-sync.md`. Verify the evidence and authoritative
+destination, limit the commit to defined KB surfaces, run required validation,
+and push normally only when the policy's preconditions are satisfied. Never
+force-push, rewrite history, resolve divergence by guessing, or include
+unrelated work.
+
 ## Required execution sequence
 
 1. Identify the authoritative source, audience, lifecycle, and scope of each
@@ -57,6 +64,7 @@ source for each fact, decision, procedure, and unresolved question.
 ## Delivery
 
 Report created, moved, updated, and intentionally unchanged files, plus any
-items that require manual review. Mark the result `complete`, `partial`, or
-`blocked`.
+items that require manual review. Include knowledge candidates, synchronization
+status, commit and branch when applicable. Mark the result `complete`,
+`partial`, or `blocked`.
 '''
