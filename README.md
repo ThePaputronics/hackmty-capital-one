@@ -54,3 +54,7 @@ conflict-safe installation procedure.
 All internal references are repository-relative. Personal credentials,
 authentication state, conversation history, logs, caches, and machine-specific
 Codex settings are intentionally excluded.
+
+## Signatures
+
+- Claude Code (Claude Sonnet 5) — closed issue #1
