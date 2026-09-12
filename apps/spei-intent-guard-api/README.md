@@ -59,9 +59,14 @@ The database models currently cover:
 - decision_audits
 - events
 
-The model is payer-centered. It evaluates whether a transfer looks abnormal for
-that payer at that moment. It does not create receiver blacklists, CONDUSEF
-complaint scoring, or global beneficiary reputation records.
+The model is currently payer-centered: it evaluates whether a transfer looks
+abnormal for that payer at that moment. It does not create CONDUSEF complaint
+scoring, or any reputation record attached to a person, CURP, or RFC.
+
+A receiver-side layer scoring a **CLABE** — an account, never a person — is in
+scope as of 2026-09-12 and is not yet built. See
+[`ADR-0002`](../../docs/architechture/ADR-0002-bank-integrated-api-and-receiver-worker.md)
+for the architecture and the data-model document for the missing entities.
 
 ## Local Commands
 

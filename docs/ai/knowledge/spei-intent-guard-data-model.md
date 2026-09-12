@@ -11,7 +11,15 @@ The model must answer this question:
 > How abnormal and potentially manipulated does this transfer look for this
 > payer, at this moment?
 
-It must not estimate whether a person or beneficiary is fraudulent.
+It must not estimate whether a **person** is fraudulent.
+
+> **Amended 2026-09-12.** The model is no longer payer-only. A receiver-side
+> layer scores a **CLABE** — an account, never a person — from behavioral
+> pass-through patterns computed by a continuous worker. See
+> [`ADR-0002`](../../architechture/ADR-0002-bank-integrated-api-and-receiver-worker.md).
+> The prohibition below still holds in full for persons, identities, and
+> protected attributes. The entities for the receiver side are not yet
+> modelled; section *Receiver-side entities* records what is missing.
 
 ## MVP Modeling Principles
 
@@ -547,7 +555,8 @@ Do not model these as risk inputs:
 - Receiver CURP, INE, RFC, age, gender, ethnicity, nationality, or
   socioeconomic level.
 - Beneficiary name, neighborhood, or institution as proof of fraud.
-- A global receiver risk score.
+- A risk score attached to a receiver's **identity** (person, CURP, RFC, name).
+  A score attached to a CLABE is in scope as of 2026-09-12; see ADR-0002.
 - Any single signal as a deterministic fraud decision.
 
 ## Practical Decision Rule
@@ -557,6 +566,36 @@ Do not model these as risk inputs:
 - Three or more reinforcing independent signals may trigger a reversible pause.
 
 The decision should remain transaction-scoped and explainable.
+
+## Receiver-side entities (not yet modelled)
+
+The schema cannot currently express the receiver side at all, and this is the
+largest gap between the documented direction and the built model.
+
+What is missing:
+
+- **A global CLABE identity.** `beneficiaries.clabe_token` is payer-scoped and
+  tokenized, so the same destination registered by two payers is two unrelated
+  rows. Fan-in across payers cannot be computed.
+- **Observable inbound flow.** `transfers.account_id` points at the *payer's*
+  account and `beneficiary_id` at a payer-scoped row. Nothing links a transfer
+  to a receiving account the system can observe.
+- **Cash-out and onward-transfer events.** No event type represents funds
+  leaving a receiving account, so pass-through — the primary mule signal —
+  cannot be detected.
+- **Windowed aggregates.** No structure holds "N distinct payers in W days" or
+  "median minutes between credit and debit".
+- **Per-CLABE score storage** with `ruleset_version`, `computed_at`, decay tier,
+  and contributing factors. Factors should reuse the `signal_results` shape so
+  payer-side and receiver-side rows share one vocabulary.
+
+Also unmodelled on the payer side: **MTU as a distinct instrument**.
+`accounts.daily_transfer_limit` currently conflates the regulator's
+UDIS-denominated per-operation cap with a bank's aggregate daily limit. The
+seeded high-risk case sets a limit of 20,000 MXN and fires a signal named
+`amount_near_mtu`, but 1,500 UDIS is roughly 12,800 MXN, so that case does not
+model the real cap. Both MTU-evasion branches in the direction note — "move the
+line" and "stay under the line" — depend on modelling this properly.
 
 ## MVP Completion Plan
 
