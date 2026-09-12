@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nessie API reference</title><style>
+:root{color-scheme:light dark;--bg:light-dark(#f7f9fc,#10151d);--surface:light-dark(#fff,#18212c);--text:light-dark(#17212e,#edf3fa);--muted:light-dark(#53657a,#b1bfd0);--border:light-dark(#d4e0ec,#35485b);--accent:light-dark(#146eb4,#7fc0ff)}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 Inter,ui-sans-serif,system-ui,sans-serif}header{padding:2.5rem max(1.25rem,calc((100vw - 1120px)/2));background:var(--surface);border-bottom:1px solid var(--border)}header p{max-width:760px;color:var(--muted);margin:.4rem 0 0}header a{color:var(--accent)}main{max-width:1120px;margin:auto;padding:2rem 1.25rem 4rem}h1{font-size:clamp(2rem,5vw,3.4rem);letter-spacing:-.05em;margin:0}h2{margin:3rem 0 1rem;padding-top:.5rem;font-size:1.7rem}h3{margin:2rem 0 .7rem}p,li{max-width:900px}a{color:var(--accent)}code{font: .86em ui-monospace,SFMono-Regular,Menlo,monospace;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:.12rem .3rem;border-radius:4px}pre{overflow:auto;padding:1rem;border-radius:10px;background:var(--surface);border:1px solid var(--border)}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:.7rem .6rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--border)}th{background:color-mix(in srgb,var(--accent) 8%,var(--surface));position:sticky;top:0}.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:10px;background:var(--surface)}ul{padding-left:1.3rem}@media(max-width:640px){table{font-size:.82rem}th,td{min-width:130px}}
+</style></head><body><header><h1>Nessie API reference</h1><p>Versioned integration documentation, runtime findings, and documented constraints. <a href="nessie-er-diagram.html">Open the interactive ER diagram</a>.</p></header><main><h1 id="nessie-api-reference-for-the-hackathon">Nessie API reference for the hackathon</h1>
+<p>This is an integration reference for the temporary Nessie dependency used by this project. Nessie is not the project&#x27;s final backend.</p>
+<p>For a browser-friendly version of this full reference, open <a href="nessie-api-reference.html">Nessie API reference</a>. The relationship explorer is available separately at <a href="nessie-er-diagram.html">Nessie ER diagram</a>.</p>
+<p>**Source and scope.** This document was transcribed from Nessie&#x27;s published OpenAPI 3.0.3 specification, version <code>1.0.0</code>, downloaded on 2026-09-11 from <code>https://prod.nessieisreal.com/nessie-openapi-spec.yaml</code>. The interactive documentation is at &lt;https://prod.nessieisreal.com/docs&gt;. Re-check the source before depending on a behavior in production.</p>
+<p>**Runtime spot check (2026-09-11).** Read-only calls with an authorized test key returned <code>200</code> for all eight tested collection endpoints: customers, accounts, deposits, merchants, ATMs, branches, enterprise customers, and enterprise deposits. Before mutation testing, the test key&#x27;s own customers, accounts, deposits, and merchants were empty.</p>
+<p>**Mutation lifecycle check (2026-09-11).** With an explicitly marked dummy customer, the API successfully created and updated a customer and account, then created, updated, and deleted one bill, deposit, loan, and withdrawal. The dependent records subsequently returned <code>404</code>, and the customer&#x27;s account list was empty after the account deletion. No enterprise resource was changed. The customer could not be deleted; it remains as an intentionally marked orphan dummy record because the production route is not deployed.</p>
+<p>**Actual successful mutation response shape.** Contrary to the published spec, the tested <code>201</code> and <code>202</code> responses were JSON objects, not strings. Create responses contained <code>code</code>, <code>message</code>, and <code>objectCreated</code>; update responses contained <code>code</code>, <code>message</code>, and <code>objectUpdated</code>. The ID can be read from the <code>_id</code> property inside the created object. Bill and withdrawal deletion returned a JSON string; deposit, loan, and account deletion returned an empty body.</p>
+<p>**Purchase and transfer update check (2026-09-11).** <code>PUT</code> is not an upsert for either resource. Requests using new UUIDs and bodies that passed request validation both returned <code>404</code> (<code>Purchase with this id does not exist</code> and <code>This id does not exist in transfers</code>). The tested valid candidate fields were <code>medium</code>, <code>purchase_date</code>, <code>amount</code>, and <code>description</code> for a purchase, and <code>transaction_date</code>, <code>amount</code>, <code>status</code>, and <code>description</code> for a transfer. For the tested purchase update, <code>merchant_id</code> and <code>status</code> were rejected as extra fields; for the tested transfer update, <code>medium</code> and <code>payee_id</code> were rejected as extra fields. This is partial validation evidence, not a complete schema.</p>
+<p>**ATM and account-owner checks (2026-09-11).** <code>GET /atms/{id}</code> returned <code>200</code> with <code>_id</code>, <code>name</code>, <code>geocode</code>, <code>hours</code>, <code>accessibility</code>, <code>language_list</code>, and <code>amount_left</code>. <code>GET /accounts/{id}/customer</code> returned <code>200</code> with a Customer object (<code>_id</code>, <code>first_name</code>, <code>last_name</code>, and <code>address</code>), rather than the JSON string stated in the published specification. A temporary account was created under the existing marked dummy customer for this check and deleted successfully afterward.</p>
+<p>**Deletion check (2026-09-11).** <code>DELETE</code> requests with an authorized key and nonexistent sentinel IDs to <code>/customers/{id}</code> and <code>/merchants/{id}</code> both returned <code>403</code> with <code>&quot;Missing Authentication Token&quot;</code>. This confirms neither delete route is deployed at the production base URL; it is therefore not safe to create temporary customer or merchant records expecting to clean them up.</p>
+<h2 id="connection-and-authentication">Connection and authentication</h2>
+<p>Use <code>https://prod-api.nessieisreal.com</code> as the production base URL. The specification also lists local, QA, and direct-QA servers; this reference does not recommend those environments for the hackathon.</p>
+<p>Every operation below requires the query parameter <code>key</code> (string), as well as the API-key security scheme. Do not commit an API key or put it in a client bundle. A request therefore has this shape:</p>
+<pre><code>
+GET /customers?key=&lt;NESSIE_API_KEY&gt;
+
+Accept: application/json
+
+</code></pre>
+<p>All write bodies are <code>application/json</code>. The specification does not define a single uniform error envelope: <code>400</code> and <code>404</code> usually use <code>Error</code>, while <code>401</code> is documented as a JSON string. Successful create/update operations are often documented as a JSON string rather than the created object.</p>
+<h2 id="resource-relationships">Resource relationships</h2>
+<pre><code>
+Customer
+
+  |-- Account (created at /customers/{customerId}/accounts)
+
+        |-- Bill
+
+        |-- Deposit
+
+        |-- Loan
+
+        `-- Withdrawal
+
+
+
+Merchant, ATM, and Branch are directory resources.
+
+Purchase and Transfer exist as individual transaction resources in this
+
+specification, but it does not define account-scoped list/create endpoints or
+
+schemas for them.
+
+</code></pre>
+<p>Use the customer-scoped paths to enumerate a customer&#x27;s accounts and bills; use account-scoped paths to enumerate or create bills, deposits, loans, and withdrawals. Although the published specification says <code>GET /accounts/{id}/customer</code> returns a JSON string, runtime validation confirmed that it returns the <code>Customer</code> object shape.</p>
+<h2 id="entity-relationship-diagram">Entity-relationship diagram</h2>
+<p>For an interactive, higher-detail view, open <a href="nessie-er-diagram.html">the ER diagram page</a>. The Mermaid version remains below for rendering in Markdown-native tools.</p>
+<p>Solid relationships below are confirmed by the available nested endpoints and runtime checks. Directory resources are intentionally isolated. Purchases and transfers are also isolated because the published API does not expose enough creation/listing contract to establish their foreign-key relationships.</p>
+<pre><code>
+erDiagram
+
+    CUSTOMER ||--o{ ACCOUNT : owns
+
+    ACCOUNT ||--o{ BILL : has
+
+    ACCOUNT ||--o{ DEPOSIT : receives
+
+    ACCOUNT ||--o{ LOAN : has
+
+    ACCOUNT ||--o{ WITHDRAWAL : records
+
+
+
+    CUSTOMER {
+
+        string _id PK
+
+        string first_name
+
+        string last_name
+
+        object address
+
+    }
+
+    ACCOUNT {
+
+        string _id PK
+
+        string customer_id FK
+
+        string type
+
+        string nickname
+
+        integer balance
+
+        integer rewards
+
+    }
+
+    BILL {
+
+        string _id PK
+
+        string account_id FK
+
+        string status
+
+        number payment_amount
+
+    }
+
+    DEPOSIT {
+
+        string _id PK
+
+        string medium
+
+        integer amount
+
+        string transaction_date
+
+        string status
+
+    }
+
+    LOAN {
+
+        string _id PK
+
+        string type
+
+        integer amount
+
+        string status
+
+    }
+
+    WITHDRAWAL {
+
+        string _id PK
+
+        integer amount
+
+        string transaction_date
+
+        string status
+
+    }
+
+    MERCHANT {
+
+        string _id PK
+
+        string name
+
+        string category
+
+    }
+
+    ATM {
+
+        string _id PK
+
+        string name
+
+        integer amount_left
+
+        object geocode
+
+    }
+
+    BRANCH {
+
+        string _id PK
+
+        string name
+
+        string phone_number
+
+        object address
+
+    }
+
+    PURCHASE {
+
+        string _id PK
+
+        string medium
+
+        number amount
+
+        string purchase_date
+
+    }
+
+    TRANSFER {
+
+        string _id PK
+
+        number amount
+
+        string transaction_date
+
+        string status
+
+    }
+
+</code></pre>
+<p><code>account_id</code> is a declared field of <code>Bill</code>; the other account-to-transaction links are represented by their account-scoped endpoints and are not declared foreign-key fields in the published schemas. All IDs must be handled as opaque strings: live responses used UUIDs despite several OpenAPI schemas declaring 24-character IDs.</p>
+<h2 id="endpoint-catalog">Endpoint catalog</h2>
+<p>Path placeholders (<code>{id}</code>, <code>{billId}</code>, etc.) are required path strings. Add <code>?key=&lt;apiKey&gt;</code> to every request. <code>Error</code> refers to the schema in the shared models section. A blank response body is explicitly noted where the spec does not declare one.</p>
+<h3 id="customers">Customers</h3>
+<div class=table-wrap><table><thead><tr><th>Method</th><th>Path</th><th>Body</th><th>Successful response</th><th>Error responses</th></tr></thead><tbody>
+<tr><td>GET</td><td><code>/customers</code></td><td>—</td><td><code>200 Customer[]</code></td><td><code>401 string</code></td></tr>
+<tr><td>POST</td><td><code>/customers</code></td><td><code>CustomerCreate</code></td><td><code>201 string</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/customers/{id}</code></td><td>—</td><td><code>200 Customer</code></td><td><code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>PUT</td><td><code>/customers/{id}</code></td><td><code>CustomerUpdate</code></td><td><code>202 string</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/customers/{id}/accounts</code></td><td>—</td><td><code>200 Account[]</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>POST</td><td><code>/customers/{id}/accounts</code></td><td><code>AccountCreate</code></td><td><code>201 string</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/customers/{id}/bills</code></td><td>—</td><td><code>200 Bill[]</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+</tbody></table></div>
+<h3 id="accounts">Accounts</h3>
+<div class=table-wrap><table><thead><tr><th>Method</th><th>Path</th><th>Body</th><th>Successful response</th><th>Error responses</th></tr></thead><tbody>
+<tr><td>GET</td><td><code>/accounts</code></td><td>—</td><td><code>200 Account[]</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/accounts/{id}</code></td><td>—</td><td><code>200 Account</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>PUT</td><td><code>/accounts/{id}</code></td><td><code>AccountUpdate</code></td><td><code>202 string</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>DELETE</td><td><code>/accounts/{id}</code></td><td>—</td><td><code>200</code>, no body declared</td><td><code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/accounts/{id}/customer</code></td><td>—</td><td><code>200 Customer</code> (runtime-verified; spec says <code>string</code>)</td><td><code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/accounts/{id}/bills</code></td><td>—</td><td><code>200 Bill[]</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>POST</td><td><code>/accounts/{id}/bills</code></td><td><code>BillCreate</code></td><td><code>201 string</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/accounts/{id}/deposits</code></td><td>—</td><td><code>200 Deposit[]</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>POST</td><td><code>/accounts/{id}/deposits</code></td><td><code>DepositCreate</code></td><td><code>201 string</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/accounts/{id}/loans</code></td><td>—</td><td><code>200 Loan[]</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>POST</td><td><code>/accounts/{id}/loans</code></td><td><code>LoanCreate</code></td><td><code>201 string</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/accounts/{id}/withdrawals</code></td><td>—</td><td><code>200 object[]</code> (inline, unspecified fields)</td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>POST</td><td><code>/accounts/{id}/withdrawals</code></td><td>inline object, unspecified fields</td><td><code>201 string</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+</tbody></table></div>
+<h3 id="bills-deposits-and-loans">Bills, deposits, and loans</h3>
+<div class=table-wrap><table><thead><tr><th>Method</th><th>Path</th><th>Body</th><th>Successful response</th><th>Error responses</th></tr></thead><tbody>
+<tr><td>GET</td><td><code>/bills/{billId}</code></td><td>—</td><td><code>200 Bill</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>PUT</td><td><code>/bills/{billId}</code></td><td><code>BillUpdate</code></td><td><code>202 string</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>DELETE</td><td><code>/bills/{billId}</code></td><td>—</td><td><code>200 string</code></td><td><code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/deposits</code></td><td>—</td><td><code>200 Deposit[]</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/deposits/{id}</code></td><td>—</td><td><code>200 Deposit</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>PUT</td><td><code>/deposits/{id}</code></td><td><code>DepositUpdate</code></td><td><code>202 string</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>DELETE</td><td><code>/deposits/{id}</code></td><td>—</td><td><code>200</code>, no body declared</td><td><code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/loans/{id}</code></td><td>—</td><td><code>200 Loan</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>PUT</td><td><code>/loans/{id}</code></td><td><code>LoanUpdate</code></td><td><code>202 string</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>DELETE</td><td><code>/loans/{id}</code></td><td>—</td><td><code>200</code>, no body declared</td><td><code>401 string</code></td></tr>
+</tbody></table></div>
+<h3 id="merchants-atms-and-branches">Merchants, ATMs, and branches</h3>
+<div class=table-wrap><table><thead><tr><th>Method</th><th>Path</th><th>Body</th><th>Successful response</th><th>Error responses</th></tr></thead><tbody>
+<tr><td>GET</td><td><code>/merchants</code></td><td>—</td><td><code>200 Merchant[]</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>POST</td><td><code>/merchants</code></td><td><code>MerchantCreate</code></td><td><code>201 string</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/merchants/{id}</code></td><td>—</td><td><code>200 Merchant</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>PUT</td><td><code>/merchants/{id}</code></td><td><code>MerchantUpdate</code></td><td><code>202 string</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/atms</code></td><td>—</td><td><code>200 ATM[]</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/atms/{id}</code></td><td>—</td><td><code>200 ATM</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/branches</code></td><td>—</td><td><code>200 Branch[]</code></td><td><code>400 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/branches/{id}</code></td><td>—</td><td><code>200 Branch</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+</tbody></table></div>
+<p><code>ATM</code> is referenced by the endpoint responses but is absent from the published <code>components.schemas</code> section. Runtime validation observed these fields: <code>_id</code>, <code>name</code>, <code>geocode</code>, <code>hours</code>, <code>accessibility</code>, <code>language_list</code>, and <code>amount_left</code>. Treat their inner array/object element shapes as unverified.</p>
+<h3 id="enterprise-reads">Enterprise reads</h3>
+<div class=table-wrap><table><thead><tr><th>Method</th><th>Path</th><th>Body</th><th>Successful response</th><th>Error responses</th></tr></thead><tbody>
+<tr><td>GET</td><td><code>/enterprise/customers</code></td><td>—</td><td><code>200 Customer[]</code></td><td><code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/enterprise/customers/{customer_id}</code></td><td>—</td><td><code>200 Customer</code></td><td><code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/enterprise/deposits</code></td><td>—</td><td><code>200 Deposit[]</code></td><td><code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/enterprise/deposits/{deposit_id}</code></td><td>—</td><td><code>200 Deposit</code></td><td><code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/enterprise/withdrawal/{withdrawal_id}</code></td><td>—</td><td><code>200 object</code>, unspecified fields</td><td><code>404 Error</code>, <code>401 string</code></td></tr>
+</tbody></table></div>
+<h3 id="purchases-transfers-and-withdrawals">Purchases, transfers, and withdrawals</h3>
+<div class=table-wrap><table><thead><tr><th>Method</th><th>Path</th><th>Body</th><th>Successful response</th><th>Error responses</th></tr></thead><tbody>
+<tr><td>GET</td><td><code>/purchase/{purchase_id}</code></td><td>—</td><td><code>200 object</code>, unspecified fields</td><td><code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>PUT</td><td><code>/purchase/{purchase_id}</code></td><td>inline object, unspecified fields</td><td><code>202 string</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>DELETE</td><td><code>/purchase/{purchase_id}</code></td><td>—</td><td><code>200</code>, no body declared</td><td><code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/transfers/{transfer_id}</code></td><td>—</td><td><code>200 object</code>, unspecified fields</td><td><code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>PUT</td><td><code>/transfers/{transfer_id}</code></td><td>inline object, unspecified fields</td><td><code>202 string</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>DELETE</td><td><code>/transfers/{transfer_id}</code></td><td>—</td><td><code>200</code>, no body declared</td><td><code>401 string</code></td></tr>
+<tr><td>GET</td><td><code>/withdrawal/{withdrawal_id}</code></td><td>—</td><td><code>200 object</code>, unspecified fields</td><td><code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>PUT</td><td><code>/withdrawal/{withdrawal_id}</code></td><td>inline object, unspecified fields</td><td><code>202 string</code></td><td><code>400 Error</code>, <code>404 Error</code>, <code>401 string</code></td></tr>
+<tr><td>DELETE</td><td><code>/withdrawal/{withdrawal_id}</code></td><td>—</td><td><code>200</code>, no body declared</td><td><code>401 string</code></td></tr>
+</tbody></table></div>
+<p>The specification defines no property for the inline purchase, transfer, or withdrawal request/response objects. Treat those payloads as untyped until validated with an authorized integration test; do not invent fields from older versions of Nessie.</p>
+<h2 id="shared-models-and-request-bodies">Shared models and request bodies</h2>
+<p><code>*</code> marks a required field in that schema. The OpenAPI schema declares IDs on returned <code>Customer</code>, <code>Account</code>, <code>Bill</code>, <code>Merchant</code>, <code>Branch</code>, <code>Deposit</code>, and <code>Loan</code> models as 24-character strings. **TODO: Verify:** live enterprise customer and deposit IDs observed on 2026-09-11 were UUID-formatted strings, so client IDs must be treated as opaque strings rather than validated as 24-character values.</p>
+<h3 id="common-objects">Common objects</h3>
+<div class=table-wrap><table><thead><tr><th>Model</th><th>Fields</th></tr></thead><tbody>
+<tr><td><code>Error</code></td><td><code>code?: integer</code>, <code>message?: string</code>, <code>details?: string</code></td></tr>
+<tr><td><code>Address</code></td><td><code>street_number*: string</code>, <code>street_name*: string</code>, <code>city*: string</code>, <code>state*: string</code>, <code>zip*: string</code></td></tr>
+<tr><td><code>Geocode</code></td><td><code>lat*: number (float)</code>, <code>lng*: number (float)</code></td></tr>
+<tr><td><code>AccountType</code></td><td>enum: <code>Credit Card</code>, <code>Savings</code>, <code>Checking</code></td></tr>
+<tr><td><code>BillStatus</code></td><td>enum: <code>pending</code>, <code>cancelled</code>, <code>completed</code>, <code>recurring</code></td></tr>
+</tbody></table></div>
+<h3 id="customer-and-account-bodies">Customer and account bodies</h3>
+<div class=table-wrap><table><thead><tr><th>Body/model</th><th>Fields</th></tr></thead><tbody>
+<tr><td><code>CustomerCreate</code></td><td><code>first_name*: string</code>, <code>last_name*: string</code>, <code>address*: Address</code></td></tr>
+<tr><td><code>CustomerUpdate</code></td><td><code>first_name?: string</code>, <code>last_name?: string</code>, <code>address?: Address</code></td></tr>
+<tr><td><code>Customer</code></td><td><code>_id*: string</code>, plus the three <code>CustomerCreate</code> fields</td></tr>
+<tr><td><code>AccountCreate</code></td><td><code>type*: AccountType</code>, <code>nickname*: string</code>, <code>rewards*: integer &gt;= 0</code>, <code>balance*: integer &gt;= 0</code></td></tr>
+<tr><td><code>AccountUpdate</code></td><td><code>nickname*: string</code></td></tr>
+<tr><td><code>Account</code></td><td><code>_id*: string</code>, all <code>AccountCreate</code> fields, <code>account_number*: string (16 chars)</code>, <code>customer_id*: string</code></td></tr>
+</tbody></table></div>
+<h3 id="bill-bodies">Bill bodies</h3>
+<div class=table-wrap><table><thead><tr><th>Body/model</th><th>Fields</th></tr></thead><tbody>
+<tr><td><code>BillCreate</code></td><td><code>status*: BillStatus</code>, <code>payee*: string</code>, <code>payment_amount*: number (float)</code>, <code>nickname?: string</code>, <code>payment_date?: string</code>, <code>recurring_date?: integer 1..31</code></td></tr>
+<tr><td><code>BillUpdate</code></td><td>same fields as <code>BillCreate</code>, all optional</td></tr>
+<tr><td><code>Bill</code></td><td><code>_id*: string</code>, <code>status*: BillStatus</code>, <code>payee*: string</code>, <code>nickname*: string</code>, <code>creation_date*: string (date)</code>, <code>payment_date*: string</code>, <code>recurring_date*: integer 1..31</code>, <code>upcoming_payment_date*: string</code>, <code>payment_amount*: number (float)</code>, <code>account_id*: string</code></td></tr>
+</tbody></table></div>
+<h3 id="deposit-and-loan-bodies">Deposit and loan bodies</h3>
+<div class=table-wrap><table><thead><tr><th>Body/model</th><th>Fields</th></tr></thead><tbody>
+<tr><td><code>DepositCreate</code></td><td><code>medium*: string</code>, <code>transaction_date*: string</code>, <code>status*: string</code>, <code>amount*: integer</code>, <code>description*: string</code></td></tr>
+<tr><td><code>DepositUpdate</code></td><td>same fields as <code>DepositCreate</code>, all optional</td></tr>
+<tr><td><code>Deposit</code></td><td><code>_id*: string</code>, plus all <code>DepositCreate</code> fields</td></tr>
+<tr><td><code>LoanCreate</code></td><td><code>type*: string</code>, <code>status*: string</code>, <code>credit_score*: integer</code>, <code>monthly_payment*: integer</code>, <code>amount*: integer</code>, <code>description*: string</code></td></tr>
+<tr><td><code>LoanUpdate</code></td><td>same fields as <code>LoanCreate</code>, all optional</td></tr>
+<tr><td><code>Loan</code></td><td><code>_id*: string</code>, <code>creation_date*: string (date)</code>, plus all <code>LoanCreate</code> fields</td></tr>
+</tbody></table></div>
+<h3 id="merchant-and-directory-models">Merchant and directory models</h3>
+<div class=table-wrap><table><thead><tr><th>Body/model</th><th>Fields</th></tr></thead><tbody>
+<tr><td><code>MerchantCreate</code></td><td><code>name*: string</code>, <code>category?: string</code>, <code>address?: Address</code>, <code>geocode?: Geocode</code></td></tr>
+<tr><td><code>MerchantUpdate</code></td><td><code>name?: string</code>, <code>category?: string</code>, <code>address?: Address</code>, <code>geocode?: Geocode</code></td></tr>
+<tr><td><code>Merchant</code></td><td><code>_id*: string</code>, <code>name*: string</code>, <code>category?: string</code>, <code>address?: Address</code>, <code>geocode?: Geocode</code></td></tr>
+<tr><td><code>Branch</code></td><td><code>_id*: string</code>, <code>name*: string</code>, <code>phone_number*: string</code>, <code>hours*: string[]</code>, <code>notes*: string[]</code>, <code>address*: Address</code></td></tr>
+</tbody></table></div>
+<h2 id="minimal-request-examples">Minimal request examples</h2>
+<p>Create a customer, then an account belonging to that customer:</p>
+<pre><code>
+curl --request POST &#x27;https://prod-api.nessieisreal.com/customers?key=&lt;NESSIE_API_KEY&gt;&#x27; \
+
+  --header &#x27;Content-Type: application/json&#x27; \
+
+  --data &#x27;{
+
+    &quot;first_name&quot;: &quot;Jane&quot;,
+
+    &quot;last_name&quot;: &quot;Doe&quot;,
+
+    &quot;address&quot;: {
+
+      &quot;street_number&quot;: &quot;1&quot;,
+
+      &quot;street_name&quot;: &quot;Main St&quot;,
+
+      &quot;city&quot;: &quot;Arlington&quot;,
+
+      &quot;state&quot;: &quot;VA&quot;,
+
+      &quot;zip&quot;: &quot;22201&quot;
+
+    }
+
+  }&#x27;
+
+
+
+curl --request POST &#x27;https://prod-api.nessieisreal.com/customers/&lt;CUSTOMER_ID&gt;/accounts?key=&lt;NESSIE_API_KEY&gt;&#x27; \
+
+  --header &#x27;Content-Type: application/json&#x27; \
+
+  --data &#x27;{
+
+    &quot;type&quot;: &quot;Checking&quot;,
+
+    &quot;nickname&quot;: &quot;Primary checking&quot;,
+
+    &quot;rewards&quot;: 0,
+
+    &quot;balance&quot;: 0
+
+  }&#x27;
+
+</code></pre>
+<p>In the runtime check, both successful calls instead returned an object with <code>objectCreated._id</code>; use that ID for the next request, while retaining a defensive fallback until this behavior is formally documented by Nessie.</p>
+<h2 id="integration-boundaries">Integration boundaries</h2>
+<ul><li>Keep a small adapter/client boundary around Nessie; do not expose its</li></ul>
+<p>  underspecified transaction shapes directly throughout the application.</p>
+<ul><li>Model <code>key</code> as server-side configuration and redact it from logs and error</li></ul>
+<p>  reports.</p>
+<ul><li>The production API answered a CORS preflight from <code>http://localhost:3000</code></li></ul>
+<p>  with <code>Access-Control-Allow-Origin: *</code>, <code>Content-Type</code> allowed headers, and   <code>GET, POST, PUT, DELETE, OPTIONS</code> allowed methods on 2026-09-11. This makes   a browser call technically possible, but it does not make exposing a shared   API key in a client bundle safe.</p>
+<ul><li>Treat <code>202</code> as asynchronous acceptance/success as documented; the spec does</li></ul>
+<p>  not describe a polling or status endpoint.</p>
+<ul><li>**TODO: Verify** the full purchase and transfer update schemas and their</li></ul>
+<p>  successful retrieval shapes. The published API has no creation or list   endpoint for either resource, and <code>PUT</code> with a new ID is not an upsert.</p></main></body></html>
