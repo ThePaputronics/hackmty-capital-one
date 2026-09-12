@@ -34,7 +34,7 @@ def db_session() -> Generator[Session, None, None]:
 
 
 @pytest.fixture(scope="function")
-def client(db_session: Session) -> Generator[TestClient, None, None]:
+def client(db_session: Session, monkeypatch: pytest.MonkeyPatch) -> Generator[TestClient, None, None]:
     """TestClient wired to isolated in-memory test database."""
 
     def override_get_db():
@@ -42,6 +42,10 @@ def client(db_session: Session) -> Generator[TestClient, None, None]:
             yield db_session
         finally:
             pass
+
+    # API tests must never make a live Gemini request, even with a local .env key.
+    from sentinel import main
+    monkeypatch.setattr(main.settings, "gemini_api_key", None)
 
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as test_client:

@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     # Ruleset and model versions
     ruleset_version: str = "2026.09-sentinel-v1"
 
+    # Optional Gemini copy generation for paused transfers.
+    gemini_api_key: str | None = None
+    gemini_model: str = "gemini-3.6-flash"
+
     # Default MTU cap in MXN (1,500 UDIs ≈ $12,800 MXN)
     mtu_cap_mxn: float = 12800.0
 

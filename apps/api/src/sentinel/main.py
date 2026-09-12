@@ -18,6 +18,7 @@ from sentinel.database import get_db
 from sentinel.feature_store import FeatureStore, _to_utc
 from sentinel.models import Evaluation, EvaluationSignal, Event, Outcome, Payer
 from sentinel.risk import RiskEngine
+from sentinel.risk.gemini_message import generate_pause_message
 from sentinel.schemas import (
     EvaluateRequest,
     EvaluateResponse,
@@ -153,6 +154,9 @@ def evaluate_transfer(
         features=features,
         db=db,
     )
+
+    if decision == "pause":
+        payer_message_es = generate_pause_message(reason_codes, settings) or payer_message_es
 
     elapsed_ms = int((time.perf_counter() - start_time) * 1000)
 

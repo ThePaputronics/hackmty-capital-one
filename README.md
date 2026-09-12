@@ -40,7 +40,7 @@ By evaluating behavioral shifts, session telemetry, MTU regulatory cap structuri
 2. **Features relative to `as_of` (Simulated Clock):**
    Baselines and velocity windows are calculated strictly against the transaction's simulated timestamp, never wall-clock `now()`. This enables fully deterministic, reproducible replays.
 3. **Stateless API, AWS-Scalable:**
-   All state lives in standard PostgreSQL with Alembic migrations. Containerized, 12-factor compliant, sub-2ms in-request evaluation latency.
+   All state lives in standard PostgreSQL with Alembic migrations. Containerized and 12-factor compliant. Pause evaluations may take longer when Gemini generates the customer message.
 4. **Zero-Logic UI:**
    The dashboard is a pure static viewer polling two endpoints: the public API (what a bank sees) and the generator (simulation ground truth).
 
@@ -68,6 +68,8 @@ Run all services (PostgreSQL, Sentinel API, Stream Generator, Dashboard UI) with
 ```bash
 docker compose up --build
 ```
+
+To generate short protection-pause messages with Gemini, set `GEMINI_API_KEY` in your environment before starting Compose. The API uses `gemini-3.6-flash` by default; set `GEMINI_MODEL` to change it. The key stays in the API service. If it is missing or Gemini is unavailable, the API uses a concise Spanish template. Only pause messages use Gemini; the risk decision is always rule-based.
 
 - **Dashboard UI:** [http://localhost:3000](http://localhost:3000)
 - **Sentinel API & Swagger Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)

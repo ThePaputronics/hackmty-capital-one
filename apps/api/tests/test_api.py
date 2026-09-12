@@ -203,8 +203,8 @@ def test_coerced_victim_under_call_triggers_pause(client: TestClient):
     assert data["decision"] == "pause"
     assert "ACTIVE_CALL_MANIPULATION" in data["reason_codes"]
     assert "NEW_DESTINATION_RISK" in data["reason_codes"]
-    assert "PAUSA DE SEGURIDAD PROTEGIDA" in data["payer_message_es"]
-    assert "LOS BANCOS NUNCA SOLICITAN TRANSFERIR DINERO" in data["payer_message_es"]
+    assert "Pausamos esta transferencia" in data["payer_message_es"]
+    assert len(data["payer_message_es"]) <= 220
 
     # Verify outcome reporting
     eval_id = data["evaluation_id"]
