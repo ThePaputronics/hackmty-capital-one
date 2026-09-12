@@ -85,7 +85,8 @@ cython_debug/
 
 # uv
 .uv/
-uv.lock
+# uv.lock is committed on purpose: it pins the exact resolved versions so
+# every teammate and any future CI run installs the same dependency set.
 
 # IDE
 .idea/
