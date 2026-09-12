@@ -8,7 +8,7 @@ This document is **analysis and planning only**. No implementation has started.
 > of what Capital One wants is inference, not requirements. The canonical three
 > tracks — and the rule that a submission may target one track or blend two or
 > three — live in
-> [`docs/ai/knowledge/challenge-brief.md`](docs/ai/knowledge/challenge-brief.md),
+> [`docs/ai/knowledge/challenge-brief.md`](../knowledge/challenge-brief.md),
 > which wins wherever the two disagree. Kept for its background research and for
 > the reasoning behind the selected direction.
 
@@ -82,7 +82,7 @@ a fully autonomous money-mover with no human override (governance red flag).
 
 > **Resolved 2026-09-11:** the owner selected the hybrid in §4.2 — wellness
 > coach as the product surface with anomaly/fraud detection as an agent
-> inside it. See [`docs/ai/knowledge/challenge-brief.md`](docs/ai/knowledge/challenge-brief.md),
+> inside it. See [`docs/ai/knowledge/challenge-brief.md`](../knowledge/challenge-brief.md),
 > which is authoritative for the direction and for the sponsor's official
 > track statements. The analysis below is kept as the reasoning behind that
 > choice.
@@ -106,7 +106,7 @@ a fully autonomous money-mover with no human override (governance red flag).
 ### 4.2 Alternatives
 
 Scored against the sponsor-tool stack in
-[`FEASIBLE-TOOLS.md` §8](FEASIBLE-TOOLS.md).
+[`FEASIBLE-TOOLS.md` §8](../knowledge/FEASIBLE-TOOLS.md).
 
 | # | Idea | Strength | Risk |
 | --- | --- | --- | --- |
@@ -178,7 +178,7 @@ All of the following are unknown from the available material and must not be ass
 
 - ~~Official Capital One challenge statement~~ — **resolved**: the three canonical
   sponsor tracks are recorded verbatim in
-  [`docs/ai/knowledge/challenge-brief.md`](docs/ai/knowledge/challenge-brief.md),
+  [`docs/ai/knowledge/challenge-brief.md`](../knowledge/challenge-brief.md),
   which also records that a submission may target one track or blend two or three.
   `TODO: Verify` — exact hackathon rules and published judging rubric / weights
   remain unknown.

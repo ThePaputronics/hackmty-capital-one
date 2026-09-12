@@ -10,17 +10,17 @@
 
 There are two decisions at different levels and they must not be conflated:
 
-- **Authoritative repository direction:** The repository challenge brief records a hybrid of Track 1 and Track 3: a consumer financial-wellness surface with real-time anomaly and fraud detection as a first-class agent inside the same pipeline. See [`docs/ai/knowledge/challenge-brief.md`](docs/ai/knowledge/challenge-brief.md).
-- **Latest product-discovery recommendation:** The Mexico opportunity research recommends narrowing the first deliverable to a pre-submission **SPEI Intent Guard** for authorized-push-payment scams and coercion. This is a more specific product wedge, not yet an explicit replacement of the repository's recorded hybrid decision. See [`MEXICO-OPPORTUNITY-MAP.md`](MEXICO-OPPORTUNITY-MAP.md).
+- **Authoritative repository direction:** The repository challenge brief records a hybrid of Track 1 and Track 3: a consumer financial-wellness surface with real-time anomaly and fraud detection as a first-class agent inside the same pipeline. See [`docs/ai/knowledge/challenge-brief.md`](../knowledge/challenge-brief.md).
+- **Latest product-discovery recommendation:** The Mexico opportunity research recommends narrowing the first deliverable to a pre-submission **SPEI Intent Guard** for authorized-push-payment scams and coercion. This is a more specific product wedge, not yet an explicit replacement of the repository's recorded hybrid decision. See [`MEXICO-OPPORTUNITY-MAP.md`](../use-cases/MEXICO-OPPORTUNITY-MAP.md).
 
 Until the owner confirms otherwise, implementation planning should treat the SPEI Intent Guard as the leading product wedge while preserving the hybrid's Track 1 plus Track 3 framing. The wellness experience can remain the user-facing shell, but the MVP should have one sharp intervention rather than several unrelated financial-coaching features.
 
 Older exploratory documents contain useful reasoning but are subordinate to the canonical challenge brief and this status clarification:
 
-- [`CAPITAL-ONE-NEEDS.md`](CAPITAL-ONE-NEEDS.md) contains the original FlowGuard/hybrid reasoning.
-- [`FEASIBLE-TOOLS.md`](FEASIBLE-TOOLS.md) evaluates sponsor tools and alternatives.
-- [`MEXICO-OPPORTUNITY-MAP.md`](MEXICO-OPPORTUNITY-MAP.md) contains the detailed Mexico research and ranked opportunities.
-- [`CAPITAL-ONE-RAW.md`](CAPITAL-ONE-RAW.md) contains the initial sponsor-priority interpretation.
+- [`CAPITAL-ONE-NEEDS.md`](../use-cases/CAPITAL-ONE-NEEDS.md) contains the original FlowGuard/hybrid reasoning.
+- [`FEASIBLE-TOOLS.md`](../knowledge/FEASIBLE-TOOLS.md) evaluates sponsor tools and alternatives.
+- [`MEXICO-OPPORTUNITY-MAP.md`](../use-cases/MEXICO-OPPORTUNITY-MAP.md) contains the detailed Mexico research and ranked opportunities.
+- [`CAPITAL-ONE-RAW.md`](../use-cases/CAPITAL-ONE-RAW.md) contains the initial sponsor-priority interpretation.
 
 ## 2. Challenge Tracks
 
@@ -411,7 +411,7 @@ Every claim in the pitch or documentation should be labeled mentally as one of:
 - **Anecdote:** individual or vendor-reported experience, never population evidence.
 - **TODO: Verify:** date, API access, legal interpretation, prize eligibility, or production capability not yet established.
 
-Relevant detailed sources are collected in [`MEXICO-OPPORTUNITY-MAP.md`](MEXICO-OPPORTUNITY-MAP.md). No forum anecdote or unverified complaint statistic should become a ranking claim.
+Relevant detailed sources are collected in [`MEXICO-OPPORTUNITY-MAP.md`](../use-cases/MEXICO-OPPORTUNITY-MAP.md). No forum anecdote or unverified complaint statistic should become a ranking claim.
 
 ## 12. Open Decisions Before Implementation
 
@@ -446,9 +446,9 @@ The first implementation slice should be small and executable: generate events, 
 
 ## 14. Related Documents
 
-- [`docs/ai/knowledge/challenge-brief.md`](docs/ai/knowledge/challenge-brief.md) — canonical tracks and recorded repository direction.
-- [`docs/ai/knowledge/aws-scalability.md`](docs/ai/knowledge/aws-scalability.md) — AWS-ready architecture constraints.
-- [`CAPITAL-ONE-NEEDS.md`](CAPITAL-ONE-NEEDS.md) — sponsor context and original hybrid reasoning.
-- [`FEASIBLE-TOOLS.md`](FEASIBLE-TOOLS.md) — sponsor-tool evaluation, alternatives, and fallback stacks.
-- [`MEXICO-OPPORTUNITY-MAP.md`](MEXICO-OPPORTUNITY-MAP.md) — detailed research, evidence, ranking, and sources.
-- [`CAPITAL-ONE-RAW.md`](CAPITAL-ONE-RAW.md) — raw sponsor-priority notes.
+- [`docs/ai/knowledge/challenge-brief.md`](../knowledge/challenge-brief.md) — canonical tracks and recorded repository direction.
+- [`docs/ai/knowledge/aws-scalability.md`](../knowledge/aws-scalability.md) — AWS-ready architecture constraints.
+- [`CAPITAL-ONE-NEEDS.md`](../use-cases/CAPITAL-ONE-NEEDS.md) — sponsor context and original hybrid reasoning.
+- [`FEASIBLE-TOOLS.md`](../knowledge/FEASIBLE-TOOLS.md) — sponsor-tool evaluation, alternatives, and fallback stacks.
+- [`MEXICO-OPPORTUNITY-MAP.md`](../use-cases/MEXICO-OPPORTUNITY-MAP.md) — detailed research, evidence, ranking, and sources.
+- [`CAPITAL-ONE-RAW.md`](../use-cases/CAPITAL-ONE-RAW.md) — raw sponsor-priority notes.

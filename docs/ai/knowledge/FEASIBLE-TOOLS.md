@@ -1,6 +1,6 @@
 # Sponsor Tool Evaluation — Feasibility vs. Our Base Case
 
-Companion to [`CAPITAL-ONE-NEEDS.md`](CAPITAL-ONE-NEEDS.md).
+Companion to [`CAPITAL-ONE-NEEDS.md`](../use-cases/CAPITAL-ONE-NEEDS.md).
 **Analysis only. Nothing has been implemented or installed.**
 
 ---
@@ -227,7 +227,7 @@ that no longer holds together. We optimize for the Capital One challenge first.
 
 ## 8. Alternative project cases vs. this stack
 
-The four alternatives from [`CAPITAL-ONE-NEEDS.md` §4.2](CAPITAL-ONE-NEEDS.md), scored
+The four alternatives from [`CAPITAL-ONE-NEEDS.md` §4.2](../use-cases/CAPITAL-ONE-NEEDS.md), scored
 against the same stack.
 
 | Case | C1 alignment | Demo impact | Scope risk | Data authenticity | Differentiation vs. shipped Eno | Stack reuse |
