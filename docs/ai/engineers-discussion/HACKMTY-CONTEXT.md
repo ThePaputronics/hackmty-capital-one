@@ -256,7 +256,14 @@ Show the same or equivalent event stream with detection disabled or with the gua
 
 Production fraud prevalence, recovered pesos, and nationwide APP performance must not be claimed from synthetic data.
 
-## 8. Architecture Direction
+## 8. Architecture Direction (Post-MVP)
+
+> **Status: deferred.** The canonical architecture for the hackathon build is
+> the synchronous request-scoped path recorded in
+> [`docs/architechture/ADR-0001-canonical-mvp-architecture.md`](../../architechture/ADR-0001-canonical-mvp-architecture.md).
+> The event stream, the agent layer, and the SSE dashboard described in this
+> section are the direction *after* that path works end to end. Do not build
+> them first.
 
 ### Simple logical flow
 
