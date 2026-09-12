@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sentinel
+      POSTGRES_PASSWORD: sentinel_password
+      POSTGRES_DB: sentinel_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - sentinel-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinel -d sentinel_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://sentinel:sentinel_password@postgres:5432/sentinel_db
+      PORT: 8000
+      HOST: 0.0.0.0
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  generator:
+    build:
+      context: .
+      dockerfile: apps/generator/Dockerfile
+    restart: unless-stopped
+    environment:
+      API_URL: http://api:8000
+      PORT: 8001
+      SIM_SPEED: 6.0
+      AUTO_START: "false"
+    ports:
+      - "8001:8001"
+    depends_on:
+      api:
+        condition: service_started
+
+  ui:
+    build:
+      context: .
+      dockerfile: apps/ui/Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+      - generator
+
+volumes:
+  sentinel-postgres-data:

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentinel — SPEI Intent & Recipient Guard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              500: '#0284c7',
+              600: '#0369a1',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom sleek scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    .pulse-glow { animation: pulseGlow 2s infinite; }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-sky-500 selection:text-white">
+
+  <!-- Header & Top Navigation -->
+  <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-40 px-6 py-3.5 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center font-bold text-slate-950 shadow-lg shadow-sky-500/20">
+        🛡️
+      </div>
+      <div>
+        <h1 class="text-base font-semibold tracking-tight text-white flex items-center space-x-2">
+          <span>SENTINEL</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-sky-950 text-sky-400 border border-sky-800 font-mono">SPEI Intent Guard</span>
+        </h1>
+        <p class="text-xs text-slate-400">Protección conductual pre-envío contra estafas por coerción y engaño</p>
+      </div>
+    </div>
+
+    <!-- Simulation Clock & Controls -->
+    <div class="flex items-center space-x-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-1.5 flex items-center space-x-3 shadow-inner">
+        <div id="sim-status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+        <div class="text-left">
+          <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Reloj Simulado</div>
+          <div id="sim-clock-display" class="font-mono text-xs font-semibold text-sky-300">Día 1 · 09:00 hrs</div>
+        </div>
+      </div>
+
+      <button id="btn-start-sim" onclick="startSimulation()" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium px-4 py-2 rounded-lg shadow-sm transition flex items-center space-x-1.5">
+        <span>▶ Iniciar Demo</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="flex-1 p-6 grid grid-cols-12 gap-6 max-w-[1600px] w-full mx-auto">
+
+    <!-- Left & Center: Metrics and Live Event Feed (8 cols) -->
+    <div class="col-span-12 lg:col-span-8 flex flex-col space-y-6">
+
+      <!-- Top Row: Split Metrics (Bank View vs Simulation Truth) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Card: Lo que el Banco Ve (Superficie del Producto) -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 h-1 w-full bg-gradient-to-r from-sky-500 to-indigo-500"></div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
+              <span>🏦</span>
+              <span>Métricas de Institución Bancaria</span>
+            </span>
+            <span class="text-[11px] font-mono text-sky-400 bg-sky-950/80 px-2 py-0.5 rounded border border-sky-800">API Pública</span>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+              <div class="text-[10px] text-slate-400">Evaluadas</div>
+              <div id="metric-bank-total" class="text-lg font-bold font-mono text-white mt-0.5">0</div>
+            </div>
+            <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+              <div class="text-[10px] text-slate-400">Intervenciones</div>
+              <div id="metric-bank-interventions" class="text-lg font-bold font-mono text-amber-400 mt-0.5">0</div>
+            </div>
+            <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+              <div class="text-[10px] text-slate-400">Latencia p95</div>
+              <div id="metric-bank-latency" class="text-lg font-bold font-mono text-emerald-400 mt-0.5">1.2 ms</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Lo que Solo Nosotros Sabemos (Verdad Oculta de Simulación) -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 h-1 w-full bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
+              <span>🔬</span>
+              <span>Verdad de Simulación (Etiqueta Oculta)</span>
+            </span>
+            <span class="text-[11px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">Ground Truth</span>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+              <div class="text-[10px] text-slate-400">APP Interceptados</div>
+              <div id="metric-sim-app-intercepted" class="text-lg font-bold font-mono text-emerald-400 mt-0.5">0 / 0</div>
+            </div>
+            <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+              <div class="text-[10px] text-slate-400">Pesos Protegidos</div>
+              <div id="metric-sim-pesos-protected" class="text-lg font-bold font-mono text-emerald-300 mt-0.5">$0 MXN</div>
+            </div>
+            <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+              <div class="text-[10px] text-slate-400">Falsos Positivos PyME</div>
+              <div id="metric-sim-merchant-fp" class="text-lg font-bold font-mono text-slate-300 mt-0.5">0.0%</div>
+            </div>
+          </div>
+          <div class="mt-2 text-[10px] text-slate-500 italic">
+            * Supuesto declarado: p(cancelación | pausa) = 85%. Los datos no se filtran a la API.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Stream Feed (Transaction Log) -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl flex-1 flex flex-col overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Feed en Tiempo Real</span>
+            <span id="feed-counter-badge" class="bg-slate-800 text-slate-400 font-mono text-[11px] px-2 py-0.5 rounded-full">0 eventos</span>
+          </div>
+          <div class="flex items-center space-x-2 text-[11px] text-slate-400">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Allow (Pasa)</span>
+            <span class="inline-block w-2 h-2 rounded-full bg-amber-500 ml-2"></span>
+            <span>Challenge (Verificación)</span>
+            <span class="inline-block w-2 h-2 rounded-full bg-rose-500 ml-2"></span>
+            <span>Pause (Fricción Activa)</span>
+          </div>
+        </div>
+
+        <!-- Feed List -->
+        <div id="feed-container" class="flex-1 overflow-y-auto divide-y divide-slate-800/60 p-2 space-y-1 font-mono text-xs">
+          <!-- Feed items inserted dynamically -->
+          <div class="text-center py-16 text-slate-600">
+            Esperando stream de transacciones... Haz clic en "Iniciar Demo" para arrancar.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Side: Mobile Phone Card Simulator + Signal Inspector (4 cols) -->
+    <div class="col-span-12 lg:col-span-4 flex flex-col space-y-6">
+
+      <!-- Smartphone Preview Frame -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col items-center">
+        <div class="text-xs font-medium uppercase tracking-wider text-slate-400 mb-3 flex items-center space-x-1.5 self-start">
+          <span>📱</span>
+          <span>Intervención en App del Pagador</span>
+        </div>
+
+        <!-- Phone Shell -->
+        <div class="w-[280px] h-[520px] bg-slate-950 rounded-[36px] border-4 border-slate-700 shadow-2xl overflow-hidden flex flex-col relative">
+          <!-- Speaker notch -->
+          <div class="h-4 bg-slate-900 w-28 mx-auto rounded-b-xl flex items-center justify-center">
+            <div class="w-8 h-1 bg-slate-800 rounded-full"></div>
+          </div>
+
+          <!-- Bank Mobile Top Bar -->
+          <div class="px-4 py-2 border-b border-slate-800/60 flex items-center justify-between text-[10px] text-slate-400">
+            <span class="font-bold text-sky-400">BANCO MÓVIL</span>
+            <span>SPEI 24/7</span>
+          </div>
+
+          <!-- Phone Screen Dynamic Body -->
+          <div id="phone-screen-body" class="flex-1 p-4 flex flex-col justify-between overflow-y-auto text-left">
+            <!-- Normal transfer state by default -->
+            <div class="space-y-3">
+              <div class="text-center py-2">
+                <span class="text-2xl">🛡️</span>
+                <div class="text-xs font-semibold text-slate-200 mt-1">Listo para transferir</div>
+                <div class="text-[10px] text-slate-400">Monitoreo activo Sentinel</div>
+              </div>
+              <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800 text-[11px] space-y-1">
+                <div class="text-slate-400 text-[10px]">Monto</div>
+                <div class="text-sm font-bold text-white">$0.00 MXN</div>
+              </div>
+            </div>
+
+            <div class="text-[9px] text-slate-500 text-center">
+              Selecciona una transacción del feed para inspeccionar la experiencia del usuario.
+            </div>
+          </div>
+
+          <!-- Phone Home indicator bar -->
+          <div class="h-4 bg-slate-950 flex items-center justify-center pb-1">
+            <div class="w-20 h-1 bg-slate-700 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signals Inspector Card -->
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-4 flex-1 flex flex-col">
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center space-x-1.5">
+          <span>🔍</span>
+          <span>Desglose de Señales Corroboradas</span>
+        </h3>
+        <div id="signals-inspector-container" class="flex-1 overflow-y-auto space-y-2 text-xs">
+          <div class="text-slate-500 text-center py-8">
+            Haz clic en cualquier transacción del feed para auditar las señales observadas vs baseline.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Script: Zero-logic polling and presentation -->
+  <script>
+    const API_URL = "http://localhost:8000";
+    const GEN_URL = "http://localhost:8001";
+
+    let lastCursor = 0;
+    let pollInterval = null;
+    let selectedEvaluationId = null;
+    let evaluationsCache = new Map();
+
+    // 1. Start simulation trigger
+    async function startSimulation() {
+      try {
+        const btn = document.getElementById("btn-start-sim");
+        btn.disabled = true;
+        btn.innerText = "⏳ Simulando...";
+
+        const res = await fetch(`${GEN_URL}/sim/start`, { method: "POST" });
+        if (res.ok) {
+          console.log("Simulación iniciada");
+        }
+      } catch (err) {
+        console.error("No se pudo iniciar el generador en " + GEN_URL, err);
+      }
+    }
+
+    // 2. Poll simulation status (Ground truth & Clock from generator)
+    async function pollSimulationStatus() {
+      try {
+        const res = await fetch(`${GEN_URL}/sim/status`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        // Update clock
+        const clockElem = document.getElementById("sim-clock-display");
+        if (data.simulated_clock) {
+          const dt = new Date(data.simulated_clock);
+          const timeStr = dt.toTimeString().slice(0, 5);
+          clockElem.innerText = `Día ${data.day || 1} de 30 · ${timeStr} hrs`;
+        }
+
+        // Update ground-truth metrics
+        document.getElementById("metric-sim-app-intercepted").innerText =
+          `${data.app_scams_intercepted} / ${data.app_scams_attempted}`;
+        document.getElementById("metric-sim-pesos-protected").innerText =
+          `$${Number(data.pesos_protected_mxn).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+
+        const merchantFpRate = data.merchant_transfers > 0
+          ? ((data.merchant_challenges / data.merchant_transfers) * 100).toFixed(1)
+          : "0.0";
+        document.getElementById("metric-sim-merchant-fp").innerText = `${merchantFpRate}%`;
+
+        // Update status dot
+        const dot = document.getElementById("sim-status-dot");
+        if (data.state === "streaming") {
+          dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+        } else if (data.state === "completed") {
+          dot.className = "w-2.5 h-2.5 rounded-full bg-sky-500";
+        } else {
+          dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
+        }
+      } catch (err) {
+        // Generator service may be starting
+      }
+    }
+
+    // 3. Poll evaluation feed (from Sentinel API)
+    async function pollEvaluationFeed() {
+      try {
+        const res = await fetch(`${API_URL}/v1/evaluations?after=${lastCursor}&limit=40`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (data.items && data.items.length > 0) {
+          const container = document.getElementById("feed-container");
+
+          // Remove placeholder if present
+          if (lastCursor === 0) {
+            container.innerHTML = "";
+          }
+
+          data.items.forEach(item => {
+            evaluationsCache.set(item.id, item);
+
+            const row = document.createElement("div");
+            row.id = `eval-row-${item.id}`;
+            row.onclick = () => selectEvaluation(item.id);
+
+            let badgeColor = "bg-emerald-950 text-emerald-400 border-emerald-800";
+            let icon = "✓";
+            if (item.decision === "pause") {
+              badgeColor = "bg-rose-950 text-rose-300 border-rose-800";
+              icon = "🛑";
+            } else if (item.decision === "challenge") {
+              badgeColor = "bg-amber-950 text-amber-300 border-amber-800";
+              icon = "⚠️";
+            }
+
+            const isPausedOrChallenged = item.decision !== "allow";
+            const rowHighlight = isPausedOrChallenged
+              ? (item.decision === "pause" ? "bg-rose-950/20 border-rose-900/40" : "bg-amber-950/20 border-amber-900/40")
+              : "hover:bg-slate-850 bg-slate-900/30";
+
+            row.className = `p-2.5 rounded-lg border border-slate-800/80 cursor-pointer transition flex items-center justify-between ${rowHighlight}`;
+
+            const dt = new Date(item.proposed_at);
+            const timeStr = dt.toTimeString().slice(0, 5);
+
+            row.innerHTML = `
+              <div class="flex items-center space-x-3">
+                <span class="text-xs px-2 py-0.5 rounded border ${badgeColor} font-bold flex items-center space-x-1">
+                  <span>${icon}</span>
+                  <span class="uppercase">${item.decision}</span>
+                </span>
+                <div>
+                  <div class="font-sans font-semibold text-white flex items-center space-x-2">
+                    <span>${item.payer_external_id}</span>
+                    <span class="text-slate-500 text-[10px]">→ CLABE ...${item.destination_clabe.slice(-4)} (${item.destination_institution_code})</span>
+                  </div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">
+                    ATO: ${(item.score_ato * 100).toFixed(0)}% · Intent: ${(item.score_intent * 100).toFixed(0)}% · Dest: ${(item.score_recipient * 100).toFixed(0)}%
+                    ${item.outcome ? `<span class="ml-2 px-1.5 py-0.2 rounded bg-slate-800 text-sky-300 font-bold">Resultado: ${item.outcome}</span>` : ""}
+                  </div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-bold text-white text-sm">$${Number(item.amount).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</div>
+                <div class="text-[10px] text-slate-500">${timeStr} hrs</div>
+              </div>
+            `;
+
+            container.insertBefore(row, container.firstChild);
+          });
+
+          lastCursor = data.next_cursor || lastCursor;
+
+          // Update feed count
+          document.getElementById("feed-counter-badge").innerText = `${evaluationsCache.size} evaluadas`;
+
+          // Update Bank View summary
+          document.getElementById("metric-bank-total").innerText = evaluationsCache.size;
+          let interventions = 0;
+          for (let e of evaluationsCache.values()) {
+            if (e.decision !== "allow") interventions++;
+          }
+          document.getElementById("metric-bank-interventions").innerText = interventions;
+
+          // Auto-select latest pause or challenge
+          if (!selectedEvaluationId || data.items.some(i => i.decision === "pause")) {
+            const priorityItem = data.items.slice().reverse().find(i => i.decision === "pause") || data.items[data.items.length - 1];
+            if (priorityItem) selectEvaluation(priorityItem.id);
+          }
+        }
+      } catch (err) {
+        // API server may be offline
+      }
+    }
+
+    // 4. Drill-Down: Select and inspect evaluation
+    async function selectEvaluation(evalId) {
+      selectedEvaluationId = evalId;
+
+      try {
+        const res = await fetch(`${API_URL}/v1/evaluations/${evalId}`);
+        if (!res.ok) return;
+        const detail = await res.json();
+
+        // 1. Render Smartphone Screen
+        const phone = document.getElementById("phone-screen-body");
+        if (detail.decision === "allow") {
+          phone.innerHTML = `
+            <div class="space-y-4">
+              <div class="text-center py-2">
+                <div class="w-10 h-10 mx-auto rounded-full bg-emerald-950 border border-emerald-700 flex items-center justify-center text-emerald-300 font-bold text-lg">✓</div>
+                <div class="text-xs font-bold text-white mt-1">Transferencia Lista</div>
+                <div class="text-[10px] text-slate-400">Verificada por Sentinel</div>
+              </div>
+              <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] space-y-1.5">
+                <div class="text-[10px] text-slate-400">Destinatario</div>
+                <div class="font-bold text-slate-200">CLABE ...${detail.destination_clabe.slice(-4)}</div>
+                <div class="text-[10px] text-slate-400 mt-2">Monto</div>
+                <div class="text-base font-extrabold text-emerald-400">$${Number(detail.amount).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</div>
+              </div>
+              <div class="text-[10px] text-emerald-400 bg-emerald-950/60 p-2 rounded-lg border border-emerald-900">
+                ${detail.payer_message_es}
+              </div>
+            </div>
+            <button class="w-full bg-emerald-600 text-white text-xs font-semibold py-2 rounded-xl">Enviar Dinero</button>
+          `;
+        } else if (detail.decision === "challenge") {
+          phone.innerHTML = `
+            <div class="space-y-3">
+              <div class="text-center py-1">
+                <div class="w-10 h-10 mx-auto rounded-full bg-amber-950 border border-amber-600 flex items-center justify-center text-amber-300 font-bold text-lg">⚠️</div>
+                <div class="text-xs font-bold text-amber-300 mt-1">Paso de Verificación</div>
+                <div class="text-[9px] text-slate-400">Operación fuera de tu patrón normal</div>
+              </div>
+              <div class="bg-amber-950/40 p-2.5 rounded-xl border border-amber-900 text-[10px] text-amber-200 leading-relaxed">
+                ${detail.payer_message_es}
+              </div>
+              <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 text-[11px]">
+                <div class="text-[9px] text-slate-400">Monto a Enviar</div>
+                <div class="font-bold text-white text-sm">$${Number(detail.amount).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</div>
+              </div>
+            </div>
+            <div class="space-y-1.5 mt-2">
+              <button class="w-full bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-semibold py-2 rounded-xl">Validar con FaceID / Token</button>
+              <button class="w-full bg-slate-800 text-slate-300 text-[11px] py-1.5 rounded-xl">Cancelar</button>
+            </div>
+          `;
+        } else {
+          // PAUSE (Protected Friction)
+          phone.innerHTML = `
+            <div class="space-y-3">
+              <div class="text-center py-1">
+                <div class="w-10 h-10 mx-auto rounded-full bg-rose-950 border border-rose-600 flex items-center justify-center text-rose-300 font-bold text-xl pulse-glow">🛑</div>
+                <div class="text-xs font-bold text-rose-300 mt-1">Pausa de Protección</div>
+                <div class="text-[9px] text-slate-400">Riesgo inminente de estafa telefónica</div>
+              </div>
+              <div class="bg-rose-950/60 p-2.5 rounded-xl border border-rose-800 text-[10px] text-rose-200 leading-relaxed font-sans">
+                ${detail.payer_message_es}
+              </div>
+              <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 text-[11px]">
+                <div class="text-[9px] text-slate-400">Destino nuevo detectado</div>
+                <div class="font-mono text-slate-300 text-[10px]">${detail.destination_clabe}</div>
+                <div class="text-sm font-extrabold text-rose-400 mt-1">$${Number(detail.amount).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</div>
+              </div>
+            </div>
+            <div class="space-y-1.5 mt-2">
+              <button class="w-full bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-bold py-2 rounded-xl shadow-lg shadow-rose-900/50">Colgar y Cancelar (Recomendado)</button>
+              <button class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] py-1.5 rounded-xl">Llamar a mi banco oficial</button>
+            </div>
+          `;
+        }
+
+        // 2. Render Signals Breakdown Inspector
+        const sigContainer = document.getElementById("signals-inspector-container");
+        sigContainer.innerHTML = "";
+
+        if (detail.signals && detail.signals.length > 0) {
+          detail.signals.forEach(sig => {
+            const card = document.createElement("div");
+            card.className = "bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 space-y-1";
+
+            let groupBadge = "bg-sky-950 text-sky-400 border-sky-800";
+            if (sig.signal_group === "intent") groupBadge = "bg-amber-950 text-amber-400 border-amber-800";
+            if (sig.signal_group === "ato") groupBadge = "bg-rose-950 text-rose-400 border-rose-800";
+
+            card.innerHTML = `
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded border ${groupBadge}">${sig.signal_group}</span>
+                <span class="text-[10px] font-mono text-slate-400">+${sig.points} pts riesgo</span>
+              </div>
+              <div class="font-semibold text-slate-200 text-xs mt-0.5">${sig.key}</div>
+              <div class="text-[11px] text-slate-300 mt-0.5 leading-snug">${sig.explanation}</div>
+              <div class="text-[10px] text-slate-400 bg-slate-900/60 p-1.5 rounded border border-slate-800/60 mt-1 font-mono">
+                <div><span class="text-slate-500">Observado:</span> ${sig.observed}</div>
+                <div><span class="text-slate-500">Baseline:</span> ${sig.baseline}</div>
+              </div>
+            `;
+            sigContainer.appendChild(card);
+          });
+        } else {
+          sigContainer.innerHTML = `
+            <div class="text-emerald-400 text-xs bg-emerald-950/40 border border-emerald-900 p-3 rounded-lg text-center">
+              ✓ Todas las dimensiones dentro de los límites esperados.
+            </div>
+          `;
+        }
+
+      } catch (err) {
+        console.error("Error al cargar detalle", err);
+      }
+    }
+
+    // Initialize loop
+    pollSimulationStatus();
+    pollEvaluationFeed();
+    setInterval(pollSimulationStatus, 1000);
+    setInterval(pollEvaluationFeed, 1000);
+  </script>
+
+</body>
+</html>
