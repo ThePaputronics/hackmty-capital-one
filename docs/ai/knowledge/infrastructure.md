@@ -134,6 +134,35 @@ Observed through read-only SSH commands on 2026-09-11:
 | Docker Compose | 5.5.1 |
 | systemd state | `degraded` |
 
+## GitHub Actions runner
+
+Read-only discovery on 2026-09-11 verified:
+
+| Property | Observed value |
+| --- | --- |
+| Runner name | `hackathon-server` |
+| Repository | `ThePaputronics/hackmty-capital-one` |
+| Service state | Active and running |
+| Service user | `ramon` |
+| Custom label | `hackathon` |
+| Default labels | Enabled (`self-hosted`, `linux`, and `x64`) |
+| Work directory | `/srv/hackathon/actions-runner/_work` |
+| Direct Docker socket access | Denied |
+| Non-interactive Docker access | Available through `sudo -n docker` |
+
+The demo deployment configuration is intentionally loopback-only on port
+`18080`. External ingress, TLS, DNS, and firewall behavior remain `TODO: Verify`
+and require a separate approved design.
+
+On 2026-09-11, the infrastructure owner explicitly approved a narrow exception
+for the demo's Docker resources. The workflow may create and replace the image,
+container, and network owned by Compose project `hackathon-hello-world`.
+Project-managed files and release state must remain under
+`/srv/hackathon/apps/hello-world`, and the service may publish only
+`127.0.0.1:18080`. The exception does not permit privileged containers, host
+networking, public ingress, named volumes, Docker daemon changes, pruning, or
+mutation of unrelated Docker resources.
+
 The degraded system state is caused by failed `cloud-init-main.service` and
 `cloud-init-network.service` units. This is recorded as an observed condition,
 not diagnosed as an application problem. Review the unit logs and hosting

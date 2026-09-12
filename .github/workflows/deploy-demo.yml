@@ -1,0 +1,52 @@
+name: Deploy hello-world demo
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - Dockerfile
+      - compose.yaml
+      - deploy/**
+      - site/**
+      - scripts/deploy-demo.sh
+      - .github/workflows/deploy-demo.yml
+
+concurrency:
+  group: hackathon-hello-world-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, x64, hackathon]
+    timeout-minutes: 15
+    environment: demo
+    steps:
+      - name: Check out the exact revision
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Verify runner and authorized scope
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test "$(hostname)" = "vmi3556704"
+          test "$(id -un)" = "ramon"
+          test "$(realpath -e /srv/hackathon)" = "/srv/hackathon"
+          case "$(pwd -P)" in
+            /srv/hackathon/*) ;;
+            *) echo "Runner workspace is outside /srv/hackathon" >&2; exit 1 ;;
+          esac
+          sudo -n docker version >/dev/null
+          sudo -n docker compose version >/dev/null
+
+      - name: Deploy with health check and rollback
+        shell: bash
+        env:
+          BIND_ADDRESS: 127.0.0.1
+          APP_PORT: "18080"
+        run: bash scripts/deploy-demo.sh

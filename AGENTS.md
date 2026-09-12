@@ -24,6 +24,14 @@ packages, systemd units, global container-daemon state, firewall rules, SSH
 configuration, global reverse-proxy configuration, and other host-level state
 are outside the authorized scope.
 
+The infrastructure owner approved one narrow Docker exception on 2026-09-11:
+the hello-world demo may create and replace resources owned by the Compose
+project `hackathon-hello-world`. Its bind-mounted files and deployment state
+must remain below `/srv/hackathon/apps/hello-world`, and its published port must
+bind only to `127.0.0.1:18080`. This exception does not authorize Docker daemon
+configuration, unrelated images, containers, networks, volumes, privileged
+containers, host networking, public ingress, or host-level changes.
+
 All agent responses, documentation, plans, code comments, commit messages, and
 user-facing text must be written in English unless the user explicitly asks
 for another language.
