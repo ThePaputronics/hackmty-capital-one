@@ -15,11 +15,13 @@ from app.models import (
     LimitChange,
     RiskEvaluation,
     SecurityEvent,
-    Session as UserSession,
     SignalResult,
     Transfer,
     User,
     UserBaseline,
+)
+from app.models import (
+    Session as UserSession,
 )
 
 
@@ -133,9 +135,7 @@ def seed_demo_case(db: Session, case: DemoCase) -> RiskEvaluation:
             session_id=session.id,
             previous_limit=case.previous_limit,
             new_limit=case.new_limit,
-            change_ratio=case.new_limit / case.previous_limit
-            if case.previous_limit > 0
-            else 1.0,
+            change_ratio=case.new_limit / case.previous_limit if case.previous_limit > 0 else 1.0,
         )
     )
 
@@ -203,9 +203,7 @@ def seed_demo_case(db: Session, case: DemoCase) -> RiskEvaluation:
     db.add(
         DecisionAudit(
             risk_evaluation_id=evaluation.id,
-            action={"allow": "none", "warn": "soft_warning", "pause": "reversible_pause"}[
-                decision
-            ],
+            action={"allow": "none", "warn": "soft_warning", "pause": "reversible_pause"}[decision],
             customer_message=build_customer_message(decision, case.signals),
             reason_codes=[signal.signal_key for signal in case.signals],
         )

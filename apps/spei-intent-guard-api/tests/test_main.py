@@ -92,15 +92,18 @@ def test_create_and_list_er_data(client: TestClient):
     assert beneficiary_response.status_code == 201
     beneficiary_id = beneficiary_response.json()["id"]
 
-    assert client.post(
-        "/api/v1/beneficiary-changes",
-        json={
-            "beneficiary_id": beneficiary_id,
-            "session_id": session_id,
-            "change_type": "created",
-            "changed_fields": {"clabe_token": "created"},
-        },
-    ).status_code == 201
+    assert (
+        client.post(
+            "/api/v1/beneficiary-changes",
+            json={
+                "beneficiary_id": beneficiary_id,
+                "session_id": session_id,
+                "change_type": "created",
+                "changed_fields": {"clabe_token": "created"},
+            },
+        ).status_code
+        == 201
+    )
 
     limit_response = client.post(
         "/api/v1/limit-changes",

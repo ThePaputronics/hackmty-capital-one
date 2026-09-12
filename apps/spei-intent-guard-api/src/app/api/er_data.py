@@ -14,9 +14,11 @@ from app.models import (
     Event,
     LimitChange,
     SecurityEvent,
-    Session as UserSession,
     Transfer,
     User,
+)
+from app.models import (
+    Session as UserSession,
 )
 
 router = APIRouter(prefix="/api/v1", tags=["er-data"])

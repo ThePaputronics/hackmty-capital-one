@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, JSON, String, Text, func
+from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -171,7 +171,9 @@ class UserBaseline(Base):
     minimum_residual_balance: Mapped[float] = mapped_column(Float)
     usual_active_hours: Mapped[list[int] | None] = mapped_column(JSON, nullable=True)
     usual_channels: Mapped[list[str] | None] = mapped_column(JSON, nullable=True)
-    computed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    computed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
 
 class RiskEvaluation(Base):
@@ -182,7 +184,9 @@ class RiskEvaluation(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     transfer_id: Mapped[int] = mapped_column(ForeignKey("transfers.id"), index=True)
     baseline_id: Mapped[int] = mapped_column(ForeignKey("user_baselines.id"), index=True)
-    evaluated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    evaluated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
     anomaly_score: Mapped[float] = mapped_column(Float)
     manipulation_risk_score: Mapped[float] = mapped_column(Float)
     decision: Mapped[str] = mapped_column(String(20))
@@ -244,5 +248,7 @@ class Event(Base):
     event_type: Mapped[str] = mapped_column(String(80), index=True)
     entity_type: Mapped[str | None] = mapped_column(String(80), nullable=True)
     entity_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    occurred_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
     payload: Mapped[dict | None] = mapped_column(JSON, nullable=True)

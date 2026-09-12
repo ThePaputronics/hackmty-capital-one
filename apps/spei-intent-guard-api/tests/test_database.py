@@ -11,8 +11,10 @@ from app.models import (
     Event,
     LimitChange,
     SecurityEvent,
-    Session as UserSession,
     Transfer,
+)
+from app.models import (
+    Session as UserSession,
 )
 from app.schemas import AccountCreate, BeneficiaryCreate, UserCreate
 

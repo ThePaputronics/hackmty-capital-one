@@ -25,7 +25,9 @@ class Settings(BaseSettings):
     api_version: str = "v1"
 
     # Database settings
-    database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/spei-intent-guard-api"
+    database_url: str = (
+        "postgresql+psycopg://postgres:postgres@localhost:5432/spei-intent-guard-api"
+    )
 
 
 @lru_cache

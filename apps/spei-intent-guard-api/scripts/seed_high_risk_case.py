@@ -1,8 +1,8 @@
 """Seed a high-risk synthetic transfer case."""
 
-from app.database import SessionLocal, init_db
 from demo_cases.seed_helpers import DemoCase, SignalSeed, print_seed_summary, seed_demo_case
 
+from app.database import SessionLocal, init_db
 
 CASE = DemoCase(
     case_id="demo-high-risk",

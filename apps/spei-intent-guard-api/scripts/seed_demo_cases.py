@@ -1,10 +1,11 @@
 """Seed all synthetic demo cases for local validation."""
 
-from app.database import SessionLocal, init_db
 from demo_cases.seed_helpers import print_seed_summary, seed_demo_case
 from seed_high_risk_case import CASE as HIGH_RISK_CASE
 from seed_low_risk_case import CASE as LOW_RISK_CASE
 from seed_medium_risk_case import CASE as MEDIUM_RISK_CASE
+
+from app.database import SessionLocal, init_db
 
 
 def main() -> None:

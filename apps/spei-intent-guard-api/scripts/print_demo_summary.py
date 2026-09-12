@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
 from app.database import SessionLocal
-from app.models import Account, RiskEvaluation, SignalResult, Transfer, User
+from app.models import Account, RiskEvaluation, Transfer, User
 
 
 def main() -> None:

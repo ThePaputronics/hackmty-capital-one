@@ -13,9 +13,11 @@ from app.models import (
     Event,
     LimitChange,
     SecurityEvent,
-    Session as UserSession,
     Transfer,
     User,
+)
+from app.models import (
+    Session as UserSession,
 )
 
 ModelT = TypeVar("ModelT")
