@@ -3,6 +3,15 @@
 Source of this synthesis: [`CAPITAL-ONE-RAW.md`](CAPITAL-ONE-RAW.md).
 This document is **analysis and planning only**. No implementation has started.
 
+> **Status: raw draft, superseded in part.** This was written before the
+> sponsor's canonical challenge statement was available, so its reconstruction
+> of what Capital One wants is inference, not requirements. The canonical three
+> tracks — and the rule that a submission may target one track or blend two or
+> three — live in
+> [`docs/ai/knowledge/challenge-brief.md`](docs/ai/knowledge/challenge-brief.md),
+> which wins wherever the two disagree. Kept for its background research and for
+> the reasoning behind the selected direction.
+
 ---
 
 ## 1. One-line framing
@@ -167,9 +176,10 @@ and mention that in the pitch.
 
 All of the following are unknown from the available material and must not be assumed:
 
-- ~~Official Capital One challenge statement~~ — **resolved**: the three sponsor
-  tracks are recorded verbatim in
-  [`docs/ai/knowledge/challenge-brief.md`](docs/ai/knowledge/challenge-brief.md).
+- ~~Official Capital One challenge statement~~ — **resolved**: the three canonical
+  sponsor tracks are recorded verbatim in
+  [`docs/ai/knowledge/challenge-brief.md`](docs/ai/knowledge/challenge-brief.md),
+  which also records that a submission may target one track or blend two or three.
   `TODO: Verify` — exact hackathon rules and published judging rubric / weights
   remain unknown.
 - `TODO: Verify` — submission deadline and demo format (live demo? video? pitch length?).
