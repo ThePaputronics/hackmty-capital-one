@@ -56,20 +56,18 @@ All internal references are repository-relative. Personal credentials,
 authentication state, conversation history, logs, caches, and machine-specific
 Codex settings are intentionally excluded.
 
-## Hello-world demo
+## Applications
 
-The repository includes a minimal static demo served by an unprivileged Nginx
-container. Local development binds the service to `127.0.0.1:18080` by default:
+The active application is the SPEI Intent Guard API in
+`apps/spei-intent-guard-api`. See its README for local setup, seeding, and
+tests.
 
-```bash
-docker compose up --build
-curl --fail http://127.0.0.1:18080/healthz
-```
-
-The deployment workflow for this demo was retired. The endpoint remains
-loopback-only until an ingress design is separately approved. The infrastructure
-owner's Docker exception remains limited to the Compose project
-`hackathon-hello-world`; it does not authorize unrelated Docker resources.
+The hello-world Nginx demo has been retired and its build files removed. The
+infrastructure owner's Docker exception is still recorded in `AGENTS.md` and
+`docs/ai/knowledge/infrastructure.md`, and remains limited to the Compose
+project `hackathon-hello-world`; it does not authorize unrelated Docker
+resources. Any future deployment stays loopback-only until an ingress design is
+separately approved.
 
 ## Signatures
 
