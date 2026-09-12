@@ -231,8 +231,9 @@
 
   <!-- Script: Zero-logic polling and presentation -->
   <script>
-    const API_URL = "http://localhost:8000";
-    const GEN_URL = "http://localhost:8001";
+    const host = window.location.hostname || "localhost";
+    const API_URL = `http://${host}:8000`;
+    const GEN_URL = `http://${host}:8001`;
 
     let lastCursor = 0;
     let pollInterval = null;
@@ -244,7 +245,7 @@
       try {
         const btn = document.getElementById("btn-start-sim");
         btn.disabled = true;
-        btn.innerText = "⏳ Simulando...";
+        btn.innerText = "⏳ Iniciando...";
 
         const res = await fetch(`${GEN_URL}/sim/start`, { method: "POST" });
         if (res.ok) {
@@ -252,6 +253,9 @@
         }
       } catch (err) {
         console.error("No se pudo iniciar el generador en " + GEN_URL, err);
+        const btn = document.getElementById("btn-start-sim");
+        btn.disabled = false;
+        btn.innerText = "▶ Iniciar Demo";
       }
     }
 
@@ -281,14 +285,27 @@
           : "0.0";
         document.getElementById("metric-sim-merchant-fp").innerText = `${merchantFpRate}%`;
 
-        // Update status dot
+        // Update status dot and button
         const dot = document.getElementById("sim-status-dot");
-        if (data.state === "streaming") {
+        const btn = document.getElementById("btn-start-sim");
+        if (data.state === "streaming" || data.state === "warming_up") {
           dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+          if (btn) {
+            btn.disabled = true;
+            btn.innerText = data.state === "warming_up" ? "⏳ Calentando baselines..." : "⏳ Simulando en vivo...";
+          }
         } else if (data.state === "completed") {
           dot.className = "w-2.5 h-2.5 rounded-full bg-sky-500";
+          if (btn) {
+            btn.disabled = false;
+            btn.innerText = "🔄 Reiniciar Demo";
+          }
         } else {
           dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
+          if (btn) {
+            btn.disabled = false;
+            btn.innerText = "▶ Iniciar Demo";
+          }
         }
       } catch (err) {
         // Generator service may be starting

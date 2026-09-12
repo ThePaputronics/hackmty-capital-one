@@ -1,13 +1,22 @@
 """Feature extraction layer computing behavioral baselines relative to simulated as_of time."""
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from typing import Any
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from sentinel.models import Event, Payer
+
+
+def _to_utc(dt: datetime | None) -> datetime | None:
+    """Normalize datetime to timezone-aware UTC."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
 
 
 @dataclass
@@ -60,18 +69,19 @@ class FeatureStore:
         as_of: datetime,
     ) -> PayerFeatures:
         """Extract all baseline and velocity features as of the proposed transfer time."""
-        features = PayerFeatures(payer_id=payer.id, as_of=as_of)
+        as_of_utc = _to_utc(as_of)
+        features = PayerFeatures(payer_id=payer.id, as_of=as_of_utc)
 
-        window_90d_start = as_of - timedelta(days=90)
-        window_24h_start = as_of - timedelta(hours=24)
-        window_1h_start = as_of - timedelta(hours=1)
+        window_90d_start = as_of_utc - timedelta(days=90)
+        window_24h_start = as_of_utc - timedelta(hours=24)
+        window_1h_start = as_of_utc - timedelta(hours=1)
 
         # 1. Fetch relevant events in the 90-day window strictly up to as_of
         stmt = (
             select(Event)
             .where(
                 Event.payer_id == payer.id,
-                Event.occurred_at <= as_of,
+                Event.occurred_at <= as_of_utc,
                 Event.occurred_at >= window_90d_start,
             )
             .order_by(Event.occurred_at.asc())
@@ -99,7 +109,7 @@ class FeatureStore:
         for event in events:
             payload: dict[str, Any] = event.payload or {}
             event_type = event.type
-            occ = event.occurred_at
+            occ = _to_utc(event.occurred_at)
 
             if event_type == "transfer_settled":
                 amt = Decimal(str(payload.get("amount", 0)))
@@ -167,18 +177,18 @@ class FeatureStore:
         features.is_destination_institution_known = destination_institution_code in institutions_seen
 
         if latest_beneficiary_addition:
-            diff = (as_of - latest_beneficiary_addition).total_seconds()
+            diff = (as_of_utc - latest_beneficiary_addition).total_seconds()
             features.beneficiary_created_minutes_ago = max(0.0, diff / 60.0)
 
         if latest_limit_change:
-            diff = (as_of - latest_limit_change).total_seconds()
+            diff = (as_of_utc - latest_limit_change).total_seconds()
             features.limit_changed_minutes_ago = max(0.0, diff / 60.0)
             features.current_limit = latest_limit_val
             if previous_limit_val and previous_limit_val > 0 and latest_limit_val:
                 features.limit_change_ratio = float(latest_limit_val / previous_limit_val)
 
         if latest_credential_change:
-            diff = (as_of - latest_credential_change).total_seconds()
+            diff = (as_of_utc - latest_credential_change).total_seconds()
             features.credential_changed_hours_ago = max(0.0, diff / 3600.0)
 
         if last_balance is not None:

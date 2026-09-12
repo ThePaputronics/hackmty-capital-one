@@ -66,18 +66,24 @@ def score_recipient(
 
     # 3. Cross-payer rapid fan-in (Rail anomaly signature: multiple distinct payers funding the same CLABE in 24h)
     if db is not None:
-        window_24h = request.proposed_at - timedelta(hours=24)
+        from sentinel.feature_store import _to_utc
+        proposed_at_utc = _to_utc(request.proposed_at)
+        window_24h = proposed_at_utc - timedelta(hours=24)
         stmt = (
-            select(func.count(func.distinct(Event.payer_id)))
+            select(Event.payer_id, Event.payload)
             .where(
                 Event.type == "transfer_settled",
                 Event.occurred_at >= window_24h,
-                Event.occurred_at <= request.proposed_at,
-                func.json_extract(Event.payload, "$.destination_clabe") == request.destination_clabe,
+                Event.occurred_at <= proposed_at_utc,
             )
         )
         try:
-            distinct_payers = db.execute(stmt).scalar() or 0
+            rows = db.execute(stmt).all()
+            matching_payers = {
+                r[0] for r in rows
+                if isinstance(r[1], dict) and r[1].get("destination_clabe") == request.destination_clabe
+            }
+            distinct_payers = len(matching_payers)
             if distinct_payers >= 3:
                 points = 4
                 total_points += points
@@ -92,7 +98,6 @@ def score_recipient(
                     )
                 )
         except Exception:
-            # Fallback if json_extract differs across engines or dialect
             pass
 
     normalized_score = min(1.0, total_points / max_possible_points)

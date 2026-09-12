@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from sentinel.config import get_settings
 from sentinel.database import get_db
-from sentinel.feature_store import FeatureStore
+from sentinel.feature_store import FeatureStore, _to_utc
 from sentinel.models import Evaluation, EvaluationSignal, Event, Outcome, Payer
 from sentinel.risk import RiskEngine
 from sentinel.schemas import (
@@ -88,6 +88,7 @@ def ingest_event(
     payer_cache: dict[str, Payer] = {}
 
     for item in items:
+        occ_utc = _to_utc(item.occurred_at)
         payer = payer_cache.get(item.payer_external_id)
         if not payer:
             stmt = select(Payer).where(Payer.external_id == item.payer_external_id)
@@ -96,7 +97,7 @@ def ingest_event(
                 payer = Payer(
                     external_id=item.payer_external_id,
                     institution_code=item.institution_code,
-                    created_at=item.occurred_at,
+                    created_at=occ_utc,
                 )
                 db.add(payer)
                 db.flush()
@@ -105,7 +106,7 @@ def ingest_event(
         db_event = Event(
             payer_id=payer.id,
             type=item.type,
-            occurred_at=item.occurred_at,
+            occurred_at=occ_utc,
             payload=item.payload,
         )
         db.add(db_event)
@@ -123,6 +124,7 @@ def evaluate_transfer(
 ) -> EvaluateResponse:
     """Evaluate a proposed SPEI transfer against ATO, Intent, and Recipient risk signals."""
     start_time = time.perf_counter()
+    prop_utc = _to_utc(request.proposed_at)
 
     # 1. Resolve or register payer
     stmt = select(Payer).where(Payer.external_id == request.payer_external_id)
@@ -131,7 +133,7 @@ def evaluate_transfer(
         payer = Payer(
             external_id=request.payer_external_id,
             institution_code=request.institution_code,
-            created_at=request.proposed_at,
+            created_at=prop_utc,
         )
         db.add(payer)
         db.flush()
@@ -142,7 +144,7 @@ def evaluate_transfer(
         payer=payer,
         destination_clabe=request.destination_clabe,
         destination_institution_code=request.destination_institution_code,
-        as_of=request.proposed_at,
+        as_of=prop_utc,
     )
 
     # 3. Corroborate signals through RiskEngine
@@ -161,7 +163,7 @@ def evaluate_transfer(
         destination_institution_code=request.destination_institution_code,
         amount=request.amount,
         currency=request.currency,
-        proposed_at=request.proposed_at,
+        proposed_at=prop_utc,
         decision=decision,
         score_ato=Decimal(str(scores.ato)),
         score_intent=Decimal(str(scores.intent)),

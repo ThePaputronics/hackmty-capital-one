@@ -1,6 +1,7 @@
 """FastAPI server exposing /sim/status and running the bank-player in background."""
 
 import argparse
+import logging
 import os
 import threading
 from contextlib import asynccontextmanager
@@ -10,6 +11,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from generator.player import BankPlayer, SimulationStatus
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+logger = logging.getLogger("generator-server")
 
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
 SPEED = float(os.environ.get("SIM_SPEED", "6.0"))
@@ -22,9 +26,12 @@ sim_thread: threading.Thread | None = None
 def run_simulation_worker():
     """Execute warmup and active streaming in background thread."""
     try:
+        logger.info("Starting simulation worker (warmup + 30-day stream)...")
         player.run_warmup()
         player.play_active_stream()
+        logger.info("Simulation worker finished.")
     except Exception as exc:
+        logger.exception("Simulation worker encountered an error: %s", exc)
         player.status.state = f"error: {exc}"
 
 
@@ -58,10 +65,12 @@ def get_simulation_status() -> dict[str, Any]:
 @app.post("/sim/start")
 def start_simulation() -> dict[str, str]:
     """Trigger the bank-player simulation stream."""
-    global sim_thread
+    global sim_thread, player
     if player.status.state in ("warming_up", "streaming"):
         return {"status": "already_running", "state": player.status.state}
 
+    # Reset player for fresh run
+    player = BankPlayer(api_base_url=API_URL, speed_seconds_per_day=SPEED)
     sim_thread = threading.Thread(target=run_simulation_worker, daemon=True)
     sim_thread.start()
     return {"status": "started", "state": "warming_up"}

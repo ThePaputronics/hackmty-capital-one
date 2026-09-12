@@ -11,7 +11,7 @@ import httpx
 from generator.clock import SimulatedClock
 from generator.simulation import PlannedTransfer, StreamSimulator
 
-logger = logging.getLogger("generator")
+logger = logging.getLogger("generator-player")
 
 
 @dataclass
