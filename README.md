@@ -133,7 +133,84 @@ Latency: p50 = 1.06 ms | p95 = 1.37 ms (In-request, sub-second)
 
 ---
 
-## 6. Declared Caveats & Assumptions
+## 6. Production Deployment
+
+The stack runs live at **[https://sixsevencitos.tech](https://sixsevencitos.tech)** ([`/docs`](https://sixsevencitos.tech/docs), [`/sim/status`](https://sixsevencitos.tech/sim/status)), deployed by `.github/workflows/deploy.yml` to a GitHub Actions **self-hosted runner** (labels `[self-hosted, Linux, X64, hackathon]`) on a shared hackathon server. It does not use `compose.yaml` — each service is a standalone `docker run` container, since the runner's host manages multiple hackathon projects and Compose would namespace-collide with them.
+
+### How to deploy
+
+- **Automatic:** push (or merge) to `main`. Every push runs the full pipeline.
+- **Manual:** GitHub → **Actions** → **Deploy** → **Run workflow**, pick a branch. Or with the CLI:
+  ```bash
+  gh workflow run deploy.yml --ref <branch>
+  gh run watch          # follow the run; the summary links the deployed URLs
+  ```
+- Deploys are serialized (`concurrency: deploy-hackathon-server`, `cancel-in-progress: false`) — a second push queues behind one already running instead of racing it.
+- There is no separate staging environment; whatever lands on `main` goes to the live domain. Check locally with `docker compose up --build` before merging.
+
+### What the pipeline does
+
+1. **Stage the release** — `git archive` of the deployed commit into `/srv/hackathon/apps/capital-one/releases/<sha>` (mirrors the `hello-world` app already on that runner).
+2. **Build images** — `api`, `generator`, `ui`, each tagged `<sha>` and `latest`.
+3. **Write environment files** (0600, `ramon`-only, under `/srv/hackathon/apps/capital-one/`):
+   - `postgres.env` — Postgres user/password, generated once on first deploy and reused after (rotating it would orphan the existing data volume).
+   - `api.env` — `DATABASE_URL`, `API_KEY_REQUIRED=true`, `INSTITUTION_API_KEY` (generated once, stable across deploys), and `GEMINI_API_KEY` from the `GEMINI_API_KEY` repo secret (a warning is logged, not a failure, if the secret is empty — Gemini messages just fall back to the static template).
+   - `generator.env` — `API_KEY`, the same value as `INSTITUTION_API_KEY`, so the generator can call the protected write endpoints.
+4. **Postgres** — created once (`hackathon-capital-one-postgres`) and left running across deploys; the pipeline only waits for its health check, never rebuilds it.
+5. **App containers** — `api`, `generator`, `ui` are stopped, removed, and recreated from the new images (`docker rm -f` + `docker run`), each waited on via its health/status endpoint before the next one starts (the API runs Alembic migrations on boot, so it comes up before the generator and UI).
+6. **HTTPS proxy** — a Caddy container (`deploy/Caddyfile`) terminates TLS for `sixsevencitos.tech` (auto-issued Let's Encrypt certificate, renewed automatically, stored in a named volume so it survives redeploys) and routes by path: `/v1/*`, `/health`, `/docs`, `/redoc`, `/openapi.json` → API; `/sim/*` → generator; everything else → the dashboard. `www` redirects to the bare domain; plain HTTP redirects to HTTPS. The Caddyfile is validated before the running proxy is ever replaced.
+7. **Release bookkeeping** — writes `current-tag`, keeps the last 5 release directories and images, prunes the rest.
+8. **On failure** — the last 100 log lines of every container are dumped to the run's output.
+
+### Server layout
+
+```
+/srv/hackathon/apps/capital-one/
+├── releases/<sha>/          # git archive of each deployed commit (last 5 kept)
+├── current-tag              # sha of the currently live release
+├── postgres.env             # 0600 — DB credentials (generated once)
+├── api.env                  # 0600 — DATABASE_URL, API_KEY_REQUIRED, INSTITUTION_API_KEY, GEMINI_API_KEY
+└── generator.env            # 0600 — API_KEY for the generator's calls to the API
+```
+
+Containers (`docker ps --filter label=io.hackathon.project=capital-one`), all on the private `hackathon-capital-one` network:
+
+| Container | Image | Published | Notes |
+|---|---|---|---|
+| `hackathon-capital-one-postgres` | `postgres:16-alpine` | — (network-only) | long-lived, not recreated per deploy |
+| `hackathon-capital-one-api` | built from `apps/api/Dockerfile` | `127.0.0.1:8000` | runs migrations on start |
+| `hackathon-capital-one-generator` | built from `apps/generator/Dockerfile` | `127.0.0.1:8001` | `AUTO_START=false` |
+| `hackathon-capital-one-ui` | built from `apps/ui/Dockerfile` | `127.0.0.1:3000` | |
+| `hackathon-capital-one-proxy` | `caddy:2-alpine` | `0.0.0.0:80`, `0.0.0.0:443` | only container reachable from the internet |
+
+App ports are bound to `127.0.0.1` — the internet reaches the stack only through Caddy on 80/443. Postgres publishes no host port at all; only containers on the `hackathon-capital-one` network can reach it.
+
+### Adding a new service to the deploy
+
+1. Give it a `Dockerfile` under `apps/<name>/`.
+2. Add it to the build loop (`for svc in api generator ui; do`) in the **Build images** step.
+3. Add a `replace "$IMAGE_PREFIX-<name>" --network-alias <name> ... "$IMAGE_PREFIX-<name>:$GITHUB_SHA"` call in **Deploy application containers**, followed by a `wait_http` check against its health endpoint.
+4. If it needs to be public, add a route for it in `deploy/Caddyfile` (path-based `handle` block, like `/sim/*`); if it's internal-only (called by other containers, not by the browser), it just needs the `--network-alias` and no Caddy route.
+5. If it needs secrets, extend the **Write container environment files** step and give it its own `<name>.env` file rather than inlining values on the `docker run` command line (`ps` would show those).
+
+### Secrets
+
+- `GEMINI_API_KEY` is a **GitHub Actions repository secret** (Settings → Secrets and variables → Actions), referenced in the workflow as `${{ secrets.GEMINI_API_KEY }}`. Rotate it with `gh secret set GEMINI_API_KEY` — the next deploy picks it up automatically.
+- `INSTITUTION_API_KEY` and the Postgres password are **not** GitHub secrets; they're generated on the server on first deploy and persisted in the 0600 env files above, so they survive redeploys without needing to round-trip through GitHub. To read the live institution key (e.g. to call a write endpoint by hand, or hand it to a judge):
+  ```bash
+  ssh ramon@209.126.9.18 'cat /srv/hackathon/apps/capital-one/institution-api-key.env'
+  ```
+
+### Troubleshooting
+
+- **Watch a run:** `gh run list --workflow deploy.yml` then `gh run watch <id>`.
+- **Container logs:** `ssh ramon@209.126.9.18 'sudo docker logs --tail 200 hackathon-capital-one-api'` (swap the container name; `sudo` needs no password for `ramon` on this box).
+- **HTTPS not live right after a DNS change:** the pipeline warns (doesn't fail) if `https://sixsevencitos.tech/health` isn't reachable yet — Let's Encrypt needs the A record to already resolve to the server. Re-run the workflow (or just push again) once `dig +short sixsevencitos.tech` returns `209.126.9.18`.
+- **A deploy is stuck/queued:** check `gh run list --workflow deploy.yml` — only one run executes at a time by design.
+
+---
+
+## 7. Declared Caveats & Assumptions
 
 1. **Merchant Category Hops:**
    The challenge brief mentions merchant category hops (MCC). In Mexico, SPEI is an interbank peer-to-peer rail without MCC metadata. Sentinel targets the other two challenge dimensions: velocity bursts and abnormal account behaviors.
