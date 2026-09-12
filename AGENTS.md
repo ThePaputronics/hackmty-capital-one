@@ -10,6 +10,12 @@ Before planning deployment or remote-server work, read
 and require verified connection details, ownership, rollback, and approval
 before changing remote state.
 
+Before planning product scope, features, or architecture, read
+`docs/ai/knowledge/challenge-brief.md`. It records the sponsor's challenge
+tracks, the track this repository targets, and the owner-stated scale and
+stack constraints. Do not change the targeted track on your own initiative;
+raise a blocker instead.
+
 AWS scalability is a top evaluation priority for this hackathon. Before
 proposing or implementing any service, API, data store, or infrastructure
 design, read `docs/ai/knowledge/aws-scalability.md` and apply its

@@ -14,6 +14,7 @@ skills, engineering strategies, and agent evaluation cases.
 | `.agents/skills/` | 11 reusable workflows discovered by Codex |
 | `docs/ai/knowledge/` | Shared contracts, strategies, and templates |
 | `docs/ai/knowledge/infrastructure.md` | Shared deployment host knowledge and safety boundaries |
+| `docs/ai/knowledge/challenge-brief.md` | Capital One challenge tracks, selected direction, and owner constraints |
 | `docs/ai/knowledge/knowledge-sync.md` | Rules for verified, conflict-safe KB synchronization |
 | `docs/ai/knowledge/agent-strategy-review.md` | Evidence-based review and roadmap for agent usage |
 | `docs/ai/knowledge/agent-routing.md` | Activation, exclusion, effort, and coordination rules for all agents |
