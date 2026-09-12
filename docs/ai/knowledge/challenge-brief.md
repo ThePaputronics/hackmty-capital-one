@@ -45,7 +45,38 @@ Design behavioral anomaly detection engines that analyze transaction ledgers in
 real time to flag unexpected transfer velocity, suspicious merchant category
 hops, or abnormal account behaviors.
 
-## Selected direction
+## Sponsor scope clarification (2026-09-12)
+
+The owner relayed a clarification from Capital One: the submission **does not
+need to solve a Capital One problem, or target Capital One as the customer.** It
+should be innovative and capable of changing the Mexican financial system.
+
+This resolves an ambiguity in the tracks below, and changes the target audience.
+The submission is now pitched **to Banco de México**, with Capital One evaluating
+in the role of the central bank / rail operator. See
+[`spei-guard-direction.md`](spei-guard-direction.md) for what follows from that.
+
+## Selected direction (2026-09-12) — supersedes the 2026-09-11 hybrid
+
+The active direction is a **two-layer SPEI fraud-interception proposal**: a
+pre-submission intent guard as the product surface and demo, plus a CLABE-scoped
+flag registry as the proposed national standard. It blends tracks 3 and 1, which
+the sponsor permits.
+
+This **inverts** the emphasis of the 2026-09-11 decision rather than abandoning
+it: interception leads, and coaching becomes the explanation surface rather than
+the headline. The evidence behind the inversion, the Brazil/DICT precedent, the
+MTU-evasion thesis, the governance requirements, and the settled scope boundaries
+are recorded in [`spei-guard-direction.md`](spei-guard-direction.md), which is
+authoritative for the direction. Ranked alternatives are in
+[`mexico-opportunity-map.md`](mexico-opportunity-map.md).
+
+Owner-directed, 2026-09-12.
+
+## Prior direction (2026-09-11) — superseded, retained for history
+
+The direction below was the decision of record until 2026-09-12. It is kept
+because the reasoning still explains why both tracks remain in scope.
 
 The active direction is the **hybrid** described in
 [`CAPITAL-ONE-NEEDS.md` §4.2](../../../CAPITAL-ONE-NEEDS.md): a consumer

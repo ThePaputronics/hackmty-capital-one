@@ -1,0 +1,424 @@
+<title>The Last Ten Seconds</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root {
+    --paper:     #F2F2F6;
+    --surface:   #FFFFFF;
+    --sunk:      #E6E6EE;
+    --ink:       #14151E;
+    --ink-soft:  #474A5C;
+    --ink-faint: #70748A;
+    --rule:      #D8D9E3;
+    --rule-hard: #AFB1C2;
+
+    --signal:    #9A5A06;
+    --signal-bg: #FBEEDA;
+    --alert:     #A83324;
+    --alert-bg:  #F8E1DD;
+    --pass:      #2B6349;
+    --pass-bg:   #DDEDE5;
+
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #0D0E15;
+      --surface:   #161823;
+      --sunk:      #11131C;
+      --ink:       #E7E8F1;
+      --ink-soft:  #AEB2C6;
+      --ink-faint: #7D8197;
+      --rule:      #262938;
+      --rule-hard: #3C4055;
+      --signal:    #E5A13F;
+      --signal-bg: #2C2113;
+      --alert:     #E8796A;
+      --alert-bg:  #301714;
+      --pass:      #5CBF94;
+      --pass-bg:   #14291F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #0D0E15;
+    --surface:   #161823;
+    --sunk:      #11131C;
+    --ink:       #E7E8F1;
+    --ink-soft:  #AEB2C6;
+    --ink-faint: #7D8197;
+    --rule:      #262938;
+    --rule-hard: #3C4055;
+    --signal:    #E5A13F;
+    --signal-bg: #2C2113;
+    --alert:     #E8796A;
+    --alert-bg:  #301714;
+    --pass:      #5CBF94;
+    --pass-bg:   #14291F;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: var(--body); font-size: 17px; line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 880px; margin: 0 auto;
+    padding-inline: 20px; padding-block: 50px 88px;
+    display: flex; flex-direction: column; gap: 52px;
+  }
+
+  h1, h2, h3 { margin: 0; text-wrap: balance; font-family: var(--display); }
+  p { margin: 0; }
+
+  .label {
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--ink-faint);
+  }
+
+  /* masthead */
+  .masthead { display: flex; flex-direction: column; gap: 16px; }
+  .topline {
+    display: flex; flex-wrap: wrap; gap: 6px 20px; justify-content: space-between;
+    border-top: 3px solid var(--ink); padding-top: 12px;
+  }
+  h1 { font-size: clamp(36px, 7.5vw, 62px); line-height: .98; font-weight: 700; letter-spacing: -.03em; }
+  .deck { font-size: clamp(18px, 2.5vw, 21px); line-height: 1.45; color: var(--ink-soft); max-width: 56ch; }
+  .deck em { color: var(--ink); font-style: italic; }
+
+  /* the ask */
+  .ask {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-top: 3px solid var(--signal); padding: 26px 28px;
+    display: flex; flex-direction: column; gap: 15px;
+  }
+  .ask h2 { font-size: clamp(22px, 3.4vw, 30px); line-height: 1.16; font-weight: 700; letter-spacing: -.015em; }
+  .ask p { color: var(--ink-soft); max-width: 62ch; }
+  .ask strong { color: var(--ink); font-weight: 600; }
+  .layers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .layer { border: 1px solid var(--rule-hard); padding: 15px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .layer .label { color: var(--signal); }
+  .layer h3 { font-size: 17px; font-weight: 600; line-height: 1.3; }
+  .layer p { font-size: 15px; }
+  @media (max-width: 640px) { .layers { grid-template-columns: 1fr; } }
+
+  /* sections */
+  section { display: flex; flex-direction: column; gap: 20px; }
+  .head { display: flex; flex-direction: column; gap: 8px; }
+  .head h2 { font-size: clamp(24px, 3.5vw, 32px); line-height: 1.12; font-weight: 700; letter-spacing: -.02em; }
+  .head p { color: var(--ink-soft); max-width: 58ch; }
+  section > p { max-width: 63ch; color: var(--ink-soft); }
+  section > p strong { color: var(--ink); font-weight: 600; }
+
+  /* stat strip */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .stat { background: var(--surface); padding: 16px 15px; display: flex; flex-direction: column; gap: 3px; }
+  .stat .n { font-family: var(--mono); font-size: 21px; font-weight: 700; color: var(--ink); }
+  .stat .l { font-size: 12.5px; color: var(--ink-faint); line-height: 1.35; }
+  @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+  /* source chips */
+  .src {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; padding: 2px 6px;
+    white-space: nowrap; vertical-align: 2px;
+  }
+  .src.v { background: var(--pass-bg); color: var(--pass); }
+  .src.s { background: var(--signal-bg); color: var(--signal); }
+  .src.o { background: var(--alert-bg); color: var(--alert); }
+
+  /* tables */
+  .tbl { overflow-x: auto; border: 1px solid var(--rule); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; min-width: 560px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  thead th {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-faint); border-bottom: 1px solid var(--rule-hard);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.mx { color: var(--ink); font-weight: 600; }
+  .tbl caption { text-align: left; padding: 13px 16px 0; font-size: 13px; color: var(--ink-faint); }
+
+  /* chart */
+  figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+  .chart-box { background: var(--surface); border: 1px solid var(--rule); padding: 20px 18px 14px; overflow-x: auto; }
+  .chart-box svg { display: block; width: 100%; min-width: 520px; height: auto; }
+  figcaption { font-size: 14px; color: var(--ink-faint); max-width: 63ch; line-height: 1.5; }
+  .svg-num { font-family: var(--mono); font-weight: 700; font-size: 30px; }
+  .svg-lab { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .04em; }
+  .svg-tick { font-family: var(--mono); font-size: 11.5px; }
+
+  /* paths */
+  .paths { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .path { border: 1px solid var(--rule-hard); background: var(--surface); padding: 17px 18px; display: flex; flex-direction: column; gap: 9px; }
+  .path .label { color: var(--alert); }
+  .path h3 { font-size: 17px; font-weight: 600; }
+  .path p { font-size: 15px; color: var(--ink-soft); }
+  .path .tell {
+    font-family: var(--mono); font-size: 12px; line-height: 1.5; color: var(--ink);
+    background: var(--sunk); padding: 9px 11px; border-left: 2px solid var(--signal);
+  }
+  @media (max-width: 640px) { .paths { grid-template-columns: 1fr; } }
+
+  /* owns-it list */
+  .owns { display: flex; flex-direction: column; border-top: 1px solid var(--rule-hard); }
+  .own { display: grid; grid-template-columns: 1fr auto; gap: 18px; padding: 13px 2px; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  .own .what { font-size: 16px; }
+  .own .who { font-family: var(--mono); font-size: 12px; color: var(--pass); text-align: right; }
+
+  /* governance */
+  .rules { display: flex; flex-direction: column; gap: 10px; }
+  .rule-i { display: grid; grid-template-columns: auto 1fr; gap: 14px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--pass); }
+  .rule-i .k { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--pass); letter-spacing: .06em; padding-top: 4px; white-space: nowrap; }
+  .rule-i p { font-size: 15.5px; color: var(--ink-soft); }
+  .rule-i p b { color: var(--ink); font-weight: 600; }
+
+  /* risks */
+  .risk { display: grid; grid-template-columns: auto 1fr; gap: 14px; padding: 14px 16px; border: 1px dashed var(--rule-hard); background: var(--surface); }
+  .risk .mark { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--alert); padding-top: 3px; }
+  .risk p { font-size: 15.5px; color: var(--ink-soft); }
+  .risk p b { color: var(--ink); font-weight: 600; }
+  .risks { display: flex; flex-direction: column; gap: 10px; }
+
+  /* demo script */
+  .script { display: flex; flex-direction: column; border-top: 1px solid var(--rule-hard); }
+  .beat { display: grid; grid-template-columns: 68px 1fr; gap: 16px; padding: 14px 2px; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  .beat .t { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); }
+  .beat p { font-size: 16px; }
+  .beat p b { font-weight: 600; color: var(--ink); }
+  .beat.fire { background: var(--signal-bg); }
+  .beat.fire .t { color: var(--signal); font-weight: 700; }
+  .beat.ok .t { color: var(--pass); }
+
+  .note { font-size: 14.5px; color: var(--ink-faint); border-left: 2px solid var(--rule-hard); padding-left: 14px; max-width: 62ch; font-style: italic; }
+
+  footer { border-top: 3px solid var(--ink); padding-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  footer p { font-size: 13.5px; color: var(--ink-faint); max-width: 70ch; line-height: 1.55; }
+  footer code { font-family: var(--mono); font-size: 12.5px; color: var(--ink-soft); }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="topline">
+      <span class="label">A proposal to Banco de México · HackMTY 2026</span>
+      <span class="label">12 Sep 2026</span>
+    </div>
+    <h1>The Last<br>Ten Seconds</h1>
+    <p class="deck">A settled SPEI transfer is irrevocable by rule, and the loss falls on the person who was deceived into authorizing it. The only place left to intervene is <em>before submission</em> — and only the operator of the rail can build it.</p>
+  </header>
+
+  <div class="ask">
+    <span class="label">The proposal</span>
+    <h2>Instrument the moment before confirm, and give the ecosystem a shared account-level signal</h2>
+    <p>Two layers. The first works inside any single institution today. The second is what makes it work nationally — and it is <strong>not something a third party can build in Mexico</strong>, which is why it belongs in this room.</p>
+    <div class="layers">
+      <div class="layer">
+        <span class="label">Layer 1 — the product</span>
+        <h3>Pre-submission intent guard</h3>
+        <p>Scores the transfer in the seconds before it is sent and inserts reversible, explained friction. Every input is the payer's own observed behavior.</p>
+      </div>
+      <div class="layer">
+        <span class="label">Layer 2 — the standard</span>
+        <h3>CLABE-scoped flag registry</h3>
+        <p>Account-level fraud signals. No names, no addresses, no amounts. Evidence counts, never verdicts.</p>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="head">
+      <h2>The gap is structural, not operational</h2>
+      <p>No participant is failing at its job. The rules themselves close off every recovery path after settlement.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="n">1.515M</span><span class="l">fraud complaints, Q1 2026 — up 31.5% YoY</span></div>
+      <div class="stat"><span class="n">~75%</span><span class="l">of all complaints against financial institutions</span></div>
+      <div class="stat"><span class="n">24.3%</span><span class="l">of claimed pesos returned — 1.265 of 5.201bn</span></div>
+      <div class="stat"><span class="n">7,308M</span><span class="l">SPEI transfers processed in 2025</span></div>
+    </div>
+    <p>SPEI identifies a payment <strong>by CLABE alone</strong> — the beneficiary name displayed to the sender verifies nothing. Once settled, a transfer is firm, irrevocable and enforceable against third parties. When the customer authenticated correctly and authorized the transfer themselves, <strong>neither institution is automatically liable</strong>, and the loss remains with the person who was deceived.</p>
+    <p>Authentication is not the failing control. In this fraud every authentication succeeds, because the customer really is the customer. The unanswered question is <strong>whether the authenticated customer is being manipulated</strong> — and nothing in the current stack asks it.</p>
+    <p class="note">Complaint counts are complaints, not unique victims or confirmed losses. We hold to that distinction throughout; 1.515 million is a quarterly complaint volume, not a headcount.</p>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2>Why no one else can fix the receiver side</h2>
+      <p>This is the argument for why the proposal is addressed here rather than to a bank or a fintech.</p>
+    </div>
+    <p>There is <strong>no public registry of CLABEs of any kind.</strong> A CLABE can be validated and attributed to an institution entirely offline — the structure, the check-digit algorithm and the institution catalog are public. But the mapping from CLABE to holder, to history, or to any flag does not exist publicly, and <strong>secreto bancario</strong> (Art. 142 LIC) closes the private route.</p>
+    <p>So a third party can tell a payer <em>"this account is new to you."</em> It cannot tell them <em>"this account has been reported by eleven other people this month."</em> That second sentence requires an ecosystem-level facility, and the institution that operates the rail is the only credible home for it.</p>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2>Brazil already built this</h2>
+      <p>Banco Central do Brasil operates account-level fraud marking inside DICT, the Pix key directory. The mechanism is proven — and its costs are now visible too.</p>
+    </div>
+    <div class="rules">
+      <div class="rule-i">
+        <span class="k">VERIFIED</span>
+        <p><b>Only your own customer.</b> An institution may create a fraud marking only against a customer of its own, and the marking must be tied to a specific Pix transaction. That is the Sybil defense — the reporting party is a supervised entity, accountable for the claim.</p>
+      </div>
+      <div class="rule-i">
+        <span class="k">VERIFIED</span>
+        <p><b>Markings decay on tiered windows</b> of 90 days, 12 months and 60 months; beyond 60 months they become invisible to DICT users.</p>
+      </div>
+      <div class="rule-i">
+        <span class="k">VERIFIED</span>
+        <p><b>Resolução BCB nº 506</b>, published 26 September 2025 and in force from 30 September, introduced transactional fraud marking and obliges participants to hold an internal policy defining criteria, triggers and governance.</p>
+      </div>
+    </div>
+    <p><strong>What is already going wrong there is the more useful half.</strong> Brazilian legal and press commentary describes people who unknowingly received scam funds having balances blocked and accounts marked. That is the mule-account holder — frequently an elderly relative whose ID was used — bearing the entire consequence while the recruiter, who never holds an account, stays invisible. <span class="src o">Secondary sources</span></p>
+
+    <div class="tbl">
+      <table>
+        <caption>Two design decisions drive that harm. Both are avoidable.</caption>
+        <thead><tr><th>Dimension</th><th>Brazil — DICT</th><th>Proposed for Mexico</th></tr></thead>
+        <tbody>
+          <tr><td>What is marked</td><td>CPF / CNPJ — the <em>person's</em> tax ID</td><td class="mx">CLABE only — the account, no person data</td></tr>
+          <tr><td>Effect of a flag</td><td>Auto-block; key withheld from the system</td><td class="mx">Informs the payer's own decision. Never blocks, never instructs a bank</td></tr>
+          <tr><td>What is shown</td><td>Effectively a verdict</td><td class="mx">An evidence count — “3 independent reports in 30 days”</td></tr>
+          <tr><td>Innocent receiver</td><td>Balance blocked, account marked</td><td class="mx">Pattern routes to welfare outreach, not restriction</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The position we would take to any room: <strong>Brazil proved the mechanism works. Here is what it is costing innocent receivers. Here is the version that fixes it — using instruments Banxico already operates.</strong></p>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2>A finding about your own instrument</h2>
+      <p>Two published facts that have not, as far as we can find, been put side by side.</p>
+    </div>
+
+    <figure>
+      <div class="chart-box">
+        <svg viewBox="0 0 720 268" role="img" aria-label="Distribution of SPEI transfer sizes. 94.6 percent of user transactions fall at or below 1,500 UDIS, which is exactly where the default MTU transfer cap sits.">
+          <defs>
+            <clipPath id="belowCap"><rect x="52" y="30" width="308" height="182"></rect></clipPath>
+            <clipPath id="aboveCap"><rect x="360" y="30" width="308" height="182"></rect></clipPath>
+          </defs>
+          <line x1="52" y1="212" x2="668" y2="212" stroke="var(--rule-hard)" stroke-width="1"></line>
+          <path d="M 52 212 C 72 212, 88 66, 126 66 C 164 66, 176 136, 226 162 C 286 188, 320 197, 360 200 C 450 206, 550 208, 668 209 L 668 212 L 52 212 Z"
+                fill="var(--signal-bg)" clip-path="url(#belowCap)"></path>
+          <path d="M 52 212 C 72 212, 88 66, 126 66 C 164 66, 176 136, 226 162 C 286 188, 320 197, 360 200 C 450 206, 550 208, 668 209 L 668 212 L 52 212 Z"
+                fill="none" stroke="var(--signal)" stroke-width="2" clip-path="url(#belowCap)"></path>
+          <path d="M 52 212 C 72 212, 88 66, 126 66 C 164 66, 176 136, 226 162 C 286 188, 320 197, 360 200 C 450 206, 550 208, 668 209 L 668 212 L 52 212 Z"
+                fill="var(--sunk)" clip-path="url(#aboveCap)"></path>
+          <path d="M 52 212 C 72 212, 88 66, 126 66 C 164 66, 176 136, 226 162 C 286 188, 320 197, 360 200 C 450 206, 550 208, 668 209 L 668 212 L 52 212 Z"
+                fill="none" stroke="var(--rule-hard)" stroke-width="1.5" clip-path="url(#aboveCap)"></path>
+          <text x="96" y="132" class="svg-num" fill="var(--signal)">94.6%</text>
+          <text x="97" y="152" class="svg-lab" fill="var(--ink-soft)">of all SPEI user transactions</text>
+          <text x="97" y="169" class="svg-lab" fill="var(--ink-soft)">sit at or below this line</text>
+          <line x1="360" y1="34" x2="360" y2="212" stroke="var(--alert)" stroke-width="2" stroke-dasharray="5 4"></line>
+          <circle cx="360" cy="34" r="3.5" fill="var(--alert)"></circle>
+          <text x="372" y="48" class="svg-lab" fill="var(--alert)">DEFAULT MTU CAP</text>
+          <text x="372" y="67" class="svg-lab" fill="var(--ink)">1,500 UDIS  ≈  $12,800 MXN</text>
+          <text x="372" y="85" class="svg-lab" fill="var(--ink-faint)">mandatory on all banks since Oct 2025</text>
+          <text x="52" y="232" class="svg-tick" fill="var(--ink-faint)">0</text>
+          <text x="330" y="232" class="svg-tick" fill="var(--ink-faint)">1,500</text>
+          <text x="624" y="232" class="svg-tick" fill="var(--ink-faint)">3,000+</text>
+          <text x="52" y="252" class="svg-tick" fill="var(--ink-faint)">Transfer size, UDIS →</text>
+        </svg>
+      </div>
+      <figcaption>Distribution shape is illustrative. The 94.6% figure and the cap value are the sourced facts: Banco de México reported 7,308.1 million SPEI transfers in 2025, with 94.6% of user transactions at or below 1,500 UDIS. The MTU default cap is 1,500 UDIs.</figcaption>
+    </figure>
+
+    <p>The cap was set at the top of normal behavior, so that it would not inconvenience the other 95%. The consequence is that a scammer pursuing a meaningful sum has exactly two options — and <strong>both leave a signature on the rail</strong>.</p>
+
+    <div class="paths">
+      <div class="path">
+        <span class="label">Evasion path A</span>
+        <h3>Stay under the line</h3>
+        <p>Break the sum into several sub-cap transfers, the only route that avoids touching the setting.</p>
+        <p class="tell">SIGNATURE → repeated transfers to<br>one first-time beneficiary,<br>compressed in time, each landing<br>just below the cap</p>
+      </div>
+      <div class="path">
+        <span class="label">Evasion path B</span>
+        <h3>Move the line</h3>
+        <p>Coach the victim into raising their own MTU — a step a genuine user almost never takes under time pressure.</p>
+        <p class="tell">SIGNATURE → self-service limit<br>increase, immediately followed by<br>a transfer to a beneficiary<br>registered minutes earlier</p>
+      </div>
+    </div>
+
+    <p class="note">This inference is ours. Neither source states it, and we present it as reasoning rather than as a citation. Its design consequence is concrete: <strong>MTU configuration changes must be captured as events</strong>, not only transfers.</p>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2>Every primitive already exists</h2>
+      <p>We are not proposing new infrastructure. We are proposing the layer that connects what is already operating.</p>
+    </div>
+    <div class="owns">
+      <div class="own"><span class="what">The rail itself</span><span class="who">SPEI · Banxico</span></div>
+      <div class="own"><span class="what">Cryptographically sealed proof of a specific transfer</span><span class="who">CEP · Banxico</span></div>
+      <div class="own"><span class="what">The account identifier scheme</span><span class="who">CLABE · Banxico / ABM</span></div>
+      <div class="own"><span class="what">A per-user risk lever, already deployed nationally</span><span class="who">MTU · since Oct 2025</span></div>
+      <div class="own"><span class="what">An unfinished data-sharing mandate</span><span class="who">Ley Fintech Art. 76</span></div>
+    </div>
+    <p><strong>CEP is the key that unlocks reporting without surveillance.</strong> Require a Banxico-sealed CEP as proof of standing to report a CLABE: the reporter must have actually transferred to that account. Attack cost rises from zero to real, traceable pesos, and the centre verifies standing cryptographically <strong>without ever seeing a name or mining the rail</strong>. Brazil's own-customer-only rule is the supervised-entity equivalent; both are worth carrying.</p>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2>Governance is the design, not the disclaimer</h2>
+      <p>Remove any one of these and the registry becomes a weapon for competitors and abusers.</p>
+    </div>
+    <div class="rules">
+      <div class="rule-i"><span class="k">01</span><p><b>Evidence counts, never verdicts.</b> Show “3 independent reports in 30 days.” Never render a label that reads as an accusation.</p></div>
+      <div class="rule-i"><span class="k">02</span><p><b>Independent reporters, not report volume.</b> Ten reports from one party is one signal. Reporter-reputation scoring is not a defense — it falls to simple collusion.</p></div>
+      <div class="rule-i"><span class="k">03</span><p><b>Standing is earned by a transaction, never asserted.</b> No CEP, no report.</p></div>
+      <div class="rule-i"><span class="k">04</span><p><b>Flags decay</b> on tiered visibility windows, as DICT does.</p></div>
+      <div class="rule-i"><span class="k">05</span><p><b>The right to know and to contest</b>, built in from the first commit. LFPDPPP already grants rectification and opposition; a registry without a contest path is both unjust and unlawful.</p></div>
+      <div class="rule-i"><span class="k">06</span><p><b>Asymmetric consequence.</b> A flag informs a payer's own decision. It never blocks an account and never travels as an instruction to an institution.</p></div>
+      <div class="rule-i"><span class="k">07</span><p><b>No free burn-check.</b> Open querying lets criminals test whether mule accounts are still clean. Answer only within a pending transfer, rate-limited, never exposing the count.</p></div>
+    </div>
+    <p><strong>On privacy, stated precisely:</strong> “CLABE only, no names” is <em>pseudonymization, not anonymization</em>. A CLABE is linkable to its holder by the issuing institution, so this remains personal data under LFPDPPP. We claim no exemption — only minimization, a stated consent basis, a retention limit and a contest process.</p>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2>What could go wrong</h2>
+      <p>Named up front, because a proposal that hides its failure modes is not ready to be evaluated.</p>
+    </div>
+    <div class="risks">
+      <div class="risk"><span class="mark">01</span><p><b>There is no public ground truth for APP fraud in Mexico.</b> CONDUSEF's categories capture transactions a customer says they did <em>not</em> authorize — the opposite of this fraud. Our models are trained on synthetic labels and we say so before we are asked.</p></div>
+      <div class="risk"><span class="mark">02</span><p><b>False positives delay legitimate money.</b> We report the challenge rate as prominently as the detection rate.</p></div>
+      <div class="risk"><span class="mark">03</span><p><b>The innocent receiver.</b> A mule-account holder is usually a victim too. Vulnerability must raise the “being exploited” hypothesis above “criminal” and route to outreach, never restriction. This is the failure Brazil is living through now.</p></div>
+      <div class="risk"><span class="mark">04</span><p><b>A legitimate merchant looks like a mule on fan-in alone.</b> Unsolved, this design flags most small businesses in Mexico. It has to be answered before anything ships.</p></div>
+      <div class="risk"><span class="mark">05</span><p><b>Cold start.</b> CONDUSEF complaints are filed against institutions, not accounts, so the registry cannot bootstrap from them. It seeds from behavioral detections contributed by participants.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2>What we built as proof</h2>
+      <p>The demo shows both altitudes: one person saved, and the system-level effect that only the registry can produce.</p>
+    </div>
+    <div class="script">
+      <div class="beat ok"><span class="t">00:00</span><p><b>A legitimate unusual transfer runs first — and passes.</b> A system that never says yes is a wall, not a guardrail.</p></div>
+      <div class="beat"><span class="t">00:20</span><p>The scam call begins. A caller impersonating the bank walks the victim through “securing” their account.</p></div>
+      <div class="beat"><span class="t">00:38</span><p>A new destination CLABE is registered. The stream shows the beneficiary appear, age <b>zero seconds</b>.</p></div>
+      <div class="beat"><span class="t">00:51</span><p><b>The victim raises their own MTU on screen.</b> The threshold line moves right, live.</p></div>
+      <div class="beat fire"><span class="t">00:54</span><p><b>The guard fires — before submission.</b> Not a risk score: one sentence in plain Spanish naming the pattern, and a reversible pause the user controls.</p></div>
+      <div class="beat"><span class="t">01:10</span><p>The same CLABE lights up across other institutions in the registry view — <b>the effect Layer 1 alone cannot produce</b>.</p></div>
+      <div class="beat"><span class="t">01:25</span><p>Replay with detection off. The counter shows pesos gone, unrecoverable by rule.</p></div>
+    </div>
+    <p>Everything runs on synthetic, Mexican-shaped transaction data. No production claim is made, no real account is touched, and nothing in the prototype holds or moves funds — which would require IFPE authorization on a 12–18 month timeline.</p>
+  </section>
+
+  <footer>
+    <p><span class="src v">Verified</span> figures are traced to primary institutional documents — INEGI, CNBV, Banco de México, CONDUSEF, SAT, and BCB's own DICT documentation. <span class="src s">Secondary</span> and <span class="src o">unverified</span> claims are labeled as such throughout and are never presented as fact.</p>
+    <p>Six widely-circulated Mexican fintech statistics were rejected during verification and are excluded from this document — among them a business-failure breakdown with no traceable primary source, a regional complaint figure reported as national, and a household-debt statistic that turned out to describe Argentina.</p>
+    <p>Brazil specifics require confirmation against BCB primary text before external citation. Research corpus, ranked alternatives and per-report unverified lists: <code>docs/ai/research/mexico-discovery-2026-09/</code> · direction of record: <code>docs/ai/knowledge/spei-guard-direction.md</code></p>
+  </footer>
+
+</div>
