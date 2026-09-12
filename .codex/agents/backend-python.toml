@@ -33,6 +33,9 @@ clear boundaries, and predictable operational behavior.
   explicitly.
 - Use context-rich exceptions and stable API error responses.
 - Make task handlers idempotent and bounded with timeouts and retry policy.
+- Keep services stateless and externally configured via environment variables
+  so they can run as multiple replicas and map onto AWS managed services
+  without a redesign; see `docs/ai/knowledge/aws-scalability.md`.
 - Test business rules separately from framework adapters and external systems.
 
 ## Required execution sequence

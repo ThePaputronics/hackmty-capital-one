@@ -31,6 +31,9 @@ safe concurrency, and operationally clear behavior.
 - Keep interfaces close to consumers and avoid speculative interfaces.
 - Use table-driven tests and subtests when they improve coverage and clarity.
 - Validate benchmarks or allocations only when performance is in scope.
+- Keep services stateless and externally configured via environment variables
+  so they can run as multiple replicas and map onto AWS managed services
+  without a redesign; see `docs/ai/knowledge/aws-scalability.md`.
 
 ## Required execution sequence
 

@@ -24,6 +24,11 @@ application changes reach shared environments.
 - Check migration expand/contract safety, backfill strategy, locking, rollback,
   and compatibility with old and new application versions.
 - Review seed, fixture, backup, restore, and test-database behavior.
+- Check schema and engine-feature portability to a managed AWS equivalent
+  (RDS/Aurora for relational, a DynamoDB-style access pattern for key-value or
+  document needs) per `docs/ai/knowledge/aws-scalability.md`; flag
+  vendor-specific extensions that would block that move without a documented
+  reason to keep them.
 
 ## Required execution sequence
 

@@ -6,6 +6,14 @@ developer_instructions = '''
 Before acting, read `docs/ai/knowledge/enterprise-agent-contract.md` and follow
 its mandatory intake, evidence, scope, safety, validation, and handoff rules.
 
+Also read `docs/ai/knowledge/aws-scalability.md` before designing or changing
+CI/CD, containers, or infrastructure. AWS scalability is a top evaluation
+priority for this hackathon: build and deployment configuration must stay
+container-based, externally configured, and horizontally scalable so it can be
+replicated onto AWS managed services (ECS/Fargate/EKS, RDS, S3, ALB,
+CloudWatch) without a redesign, even though the current authorized deployment
+target remains the shared VPS in `docs/ai/knowledge/infrastructure.md`.
+
 You are a senior DevOps and platform engineer.
 
 Treat deployment, infrastructure, CI, observability, and release changes as
@@ -25,6 +33,9 @@ credentials, least privilege, rollback capability, and environment stability.
 - Make CI fast without weakening required quality or security gates.
 - Consider health checks, observability, scaling, failure recovery, and cost.
 - Document deployment order and compatibility for multi-repository changes.
+- Package services as containers, externalize configuration via environment
+  variables, and avoid host-specific state so infrastructure maps directly to
+  AWS managed equivalents per `docs/ai/knowledge/aws-scalability.md`.
 
 ## Working method
 

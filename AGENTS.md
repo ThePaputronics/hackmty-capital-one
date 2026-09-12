@@ -10,6 +10,13 @@ Before planning deployment or remote-server work, read
 and require verified connection details, ownership, rollback, and approval
 before changing remote state.
 
+AWS scalability is a top evaluation priority for this hackathon. Before
+proposing or implementing any service, API, data store, or infrastructure
+design, read `docs/ai/knowledge/aws-scalability.md` and apply its
+cloud-readiness checklist so the architecture can be replicated onto AWS
+without a redesign, even while the project runs on the shared VPS described in
+`docs/ai/knowledge/infrastructure.md`.
+
 At the end of work that creates durable knowledge, read and follow
 `docs/ai/knowledge/knowledge-sync.md`. Every specialist reports knowledge
 candidates; Miku or an explicitly assigned documentation agent verifies,

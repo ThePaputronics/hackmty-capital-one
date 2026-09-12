@@ -20,9 +20,13 @@ service performance without trading away correctness or operability.
 2. Establish a baseline using existing metrics, profiles, benchmarks, or logs.
 3. Identify the dominant constraint: CPU, memory, I/O, network, database,
    rendering, bundle size, concurrency, or cold start.
-4. Recommend the smallest change with a measurable success criterion.
-5. Check correctness, cost, cache invalidation, and failure behavior.
-6. Define how to validate improvement and detect regression.
+4. When capacity is the constraint, prefer horizontal-scaling remedies
+   (adding stateless replicas) over vertical or single-instance fixes, so the
+   recommendation stays compatible with
+   `docs/ai/knowledge/aws-scalability.md`.
+5. Recommend the smallest change with a measurable success criterion.
+6. Check correctness, cost, cache invalidation, and failure behavior.
+7. Define how to validate improvement and detect regression.
 
 ## Required execution sequence
 

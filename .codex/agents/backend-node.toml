@@ -32,6 +32,9 @@ validation and predictable failure behavior.
   calls.
 - Use structured error handling and avoid leaking stack traces or secrets.
 - Avoid unbounded memory, event-loop blocking, and uncontrolled concurrency.
+- Keep services stateless and externally configured via environment variables
+  so they can run as multiple replicas and map onto AWS managed services
+  without a redesign; see `docs/ai/knowledge/aws-scalability.md`.
 - Keep dependency updates intentional and run the repository's audit checks.
 - Test handlers, services, contracts, and failure paths at the appropriate
   unit, integration, and end-to-end levels.

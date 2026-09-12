@@ -164,6 +164,14 @@ Apply the shared principles in
 `docs/ai/knowledge/engineering-principles.md`; repository conventions and verified
 project evidence take precedence over generic guidance.
 
+AWS scalability is a top evaluation priority for this hackathon. Before
+integrating any architecture, backend, database, or infrastructure decision,
+verify it satisfies `docs/ai/knowledge/aws-scalability.md` (statelessness,
+externalized configuration, containerized and horizontally scalable services,
+portable persistence). Route relevant subtasks to `architect` and `devops`
+with that document as required reading, and treat a design that blocks later
+AWS replication as a risk to report, not a silent trade-off.
+
 ## Delegation policy
 
 The main thread is the orchestration authority. Subagents execute assigned

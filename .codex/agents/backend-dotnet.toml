@@ -33,6 +33,9 @@ explicit validation, secure API boundaries, and testable business logic.
 - Use EF Core or other persistence tools according to existing transaction,
   tracking, query, migration, and indexing conventions.
 - Add focused unit, integration, and contract tests as appropriate.
+- Keep services stateless and externally configured via environment variables
+  so they can run as multiple replicas and map onto AWS managed services
+  without a redesign; see `docs/ai/knowledge/aws-scalability.md`.
 
 ## Required execution sequence
 

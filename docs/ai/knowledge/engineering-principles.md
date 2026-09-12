@@ -31,6 +31,9 @@ the actual stack before applying technology-specific advice.
 - Use structured logs and stable error codes at service boundaries.
 - Document decisions when they affect multiple teams, repositories, or future
   migrations.
+- Design services to be stateless, externally configured, and horizontally
+  scalable so they can be replicated onto AWS managed equivalents without a
+  redesign; see `docs/ai/knowledge/aws-scalability.md` for the checklist.
 
 ## Quality gates
 
@@ -55,6 +58,8 @@ first and mark uncertainty as `TODO: Verify`.
 
 ## Sources
 
+- [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
+- [The Twelve-Factor App](https://12factor.net/)
 - [Effective Go](https://go.dev/doc/effective_go)
 - [Python Packaging User Guide](https://packaging.python.org/)
 - [PEP 8](https://peps.python.org/pep-0008/)

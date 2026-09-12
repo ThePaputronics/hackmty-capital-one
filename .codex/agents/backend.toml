@@ -25,6 +25,10 @@ security boundaries, and operational recovery paths.
   idempotency, and safe resource handling.
 - Consider transactions, concurrency, migrations, indexes, and rollback.
 - Keep secrets out of source code, logs, tests, and documentation.
+- Keep services stateless and externally configured (environment variables,
+  shared cache/database for shared state) so they can be replicated onto AWS
+  managed services without a redesign; see
+  `docs/ai/knowledge/aws-scalability.md`.
 - Add focused unit, integration, or contract tests for changed behavior.
 
 ## Working method
