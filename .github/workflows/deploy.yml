@@ -61,7 +61,9 @@ jobs:
             echo "::endgroup::"
           done
 
-      - name: Ensure database credentials
+      - name: Write container environment files
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           set -euo pipefail
           umask 077
@@ -74,6 +76,13 @@ jobs:
           set -a; . "$pg_env"; set +a
           printf 'DATABASE_URL=postgresql+psycopg://%s:%s@postgres:5432/%s\nENVIRONMENT=production\n' \
             "$POSTGRES_USER" "$POSTGRES_PASSWORD" "$POSTGRES_DB" > "$APP_ROOT/api.env"
+
+          # Kept in the 0600 env file rather than on the docker command line, where `ps` would show it.
+          if [ -n "$GEMINI_API_KEY" ]; then
+            printf 'GEMINI_API_KEY=%s\n' "$GEMINI_API_KEY" >> "$APP_ROOT/api.env"
+          else
+            echo "::warning::GEMINI_API_KEY secret is empty; Gemini pause messages are disabled"
+          fi
 
       - name: Ensure network and database
         run: |
