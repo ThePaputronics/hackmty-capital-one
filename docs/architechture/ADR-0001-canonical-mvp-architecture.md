@@ -1,6 +1,7 @@
 # ADR-0001: Canonical MVP Architecture for SPEI Intent Guard
 
-- **Status:** Accepted
+- **Status:** Superseded by
+  [`ADR-0002`](ADR-0002-bank-integrated-api-and-receiver-worker.md) (2026-09-12)
 - **Date:** 2026-09-12
 - **Scope:** `apps/spei-intent-guard-api` and every architecture document in
   `docs/`
@@ -9,6 +10,16 @@
   `docs/ai/engineers-discussion/HACKMTY-CONTEXT.md` section 8. Both have been
   corrected to match this decision; the table in section 2 records what they
   said beforehand.
+
+> **Superseded.** This ADR was written before the owner's direction of record
+> (`docs/ai/knowledge/spei-guard-direction.md`) was visible on `main`, and so
+> reasoned from the superseded 2026-09-11 framing. Its central claim — *"No
+> component runs ahead of the API in the call graph"* — no longer holds: a
+> continuous receiver-side worker now runs beside the request path. Read
+> [`ADR-0002`](ADR-0002-bank-integrated-api-and-receiver-worker.md) instead.
+> What this ADR got right and ADR-0002 keeps: the bank-facing call is
+> synchronous and request-scoped, and no agent runtime, event stream, or SSE
+> dashboard is in the MVP. Retained for the reasoning trail.
 
 ## 1. Decision
 
