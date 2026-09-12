@@ -154,3 +154,32 @@ def test_create_and_list_er_data(client: TestClient):
     assert len(client.get("/api/v1/limit-changes").json()) == 1
     assert len(client.get("/api/v1/transfers").json()) == 1
     assert len(client.get("/api/v1/events").json()) == 1
+
+
+def test_duplicate_external_user_id_returns_409(client: TestClient):
+    """A repeated external_user_id is a client conflict, not a server fault."""
+    payload = {"external_user_id": "demo-user-dup"}
+
+    assert client.post("/api/v1/users", json=payload).status_code == 201
+
+    conflict = client.post("/api/v1/users", json=payload)
+
+    assert conflict.status_code == 409
+    assert "conflicts" in conflict.json()["detail"]
+
+
+def test_account_for_unknown_user_returns_409(client: TestClient):
+    """A foreign key pointing nowhere must be rejected, not stored."""
+    response = client.post(
+        "/api/v1/accounts",
+        json={
+            "user_id": 999_999,
+            "external_account_id": "orphan-account",
+            "institution_code": "demo-bank",
+            "available_balance": 10,
+            "daily_transfer_limit": 10,
+        },
+    )
+
+    assert response.status_code == 409
+    assert client.get("/api/v1/accounts").json() == []
