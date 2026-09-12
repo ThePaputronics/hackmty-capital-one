@@ -23,6 +23,10 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
+    # Allowed browser origins for CORS, comma-separated.
+    # Empty falls back to the local development origins.
+    cors_origin: str = ""
+
     # Database settings. This is the single source of truth for the database URL:
     # app/database.py and migrations/env.py both read it from here.
     database_url: str = DEFAULT_DATABASE_URL
@@ -34,6 +38,17 @@ class Settings(BaseSettings):
         if value.startswith("postgresql://"):
             return value.replace("postgresql://", "postgresql+psycopg://", 1)
         return value
+
+    @property
+    def cors_origins(self) -> list[str]:
+        """Return the allowed browser origins as an explicit list.
+
+        Never returns a wildcard. Starlette answers `allow_origins=["*"]` plus
+        `allow_credentials=True` by echoing whichever origin asked, which lets
+        any site make credentialed cross-origin calls to this API.
+        """
+        origins = [origin.strip() for origin in self.cors_origin.split(",") if origin.strip()]
+        return origins or ["http://localhost:3000", "http://localhost:3001"]
 
 
 @lru_cache

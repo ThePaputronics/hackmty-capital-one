@@ -1,6 +1,5 @@
 """Main application entry point."""
 
-import os
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -32,7 +31,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("CORS_ORIGIN") or "*"],
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
@@ -52,7 +51,7 @@ if __name__ == "__main__":
 
     uvicorn.run(
         "app.main:app",
-        host=os.getenv("HOST", "0.0.0.0"),
-        port=int(os.getenv("PORT", "8000")),
+        host=settings.host,
+        port=settings.port,
         reload=True,
     )
