@@ -155,8 +155,10 @@ The demo deployment configuration is intentionally loopback-only on port
 and require a separate approved design.
 
 On 2026-09-11, the infrastructure owner explicitly approved a narrow exception
-for the demo's Docker resources. The workflow may create and replace the image,
-container, and network owned by Compose project `hackathon-hello-world`.
+for the demo's Docker resources. The retired deployment workflow no longer
+uses this exception; if a future approved workflow is introduced, it may create
+and replace the image, container, and network owned by Compose project
+`hackathon-hello-world`.
 Project-managed files and release state must remain under
 `/srv/hackathon/apps/hello-world`, and the service may publish only
 `127.0.0.1:18080`. The exception does not permit privileged containers, host

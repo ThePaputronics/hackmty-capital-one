@@ -66,13 +66,10 @@ docker compose up --build
 curl --fail http://127.0.0.1:18080/healthz
 ```
 
-`.github/workflows/deploy-demo.yml` targets the verified self-hosted runner
-labels `self-hosted`, `linux`, `x64`, and `hackathon`. The workflow deploys only
-under `/srv/hackathon/apps/hello-world`, verifies health, and rolls back to the
-previous image tag when a deployment fails. The endpoint remains loopback-only
-until an ingress design is separately approved. The infrastructure owner
-approved only the Compose project `hackathon-hello-world`; the workflow does
-not manage unrelated Docker resources.
+The deployment workflow for this demo was retired. The endpoint remains
+loopback-only until an ingress design is separately approved. The infrastructure
+owner's Docker exception remains limited to the Compose project
+`hackathon-hello-world`; it does not authorize unrelated Docker resources.
 
 ## Signatures
 
