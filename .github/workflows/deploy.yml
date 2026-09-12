@@ -1,0 +1,199 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never run two deploys against the server at the same time; queue instead of cancelling.
+concurrency:
+  group: deploy-hackathon-server
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  PROJECT: capital-one
+  APP_ROOT: /srv/hackathon/apps/capital-one
+  NETWORK: hackathon-capital-one
+  IMAGE_PREFIX: hackathon-capital-one
+  PG_CONTAINER: hackathon-capital-one-postgres
+  PG_VOLUME: hackathon-capital-one-pgdata
+  # The dashboard calls the API (8000) and generator (8001) straight from the browser,
+  # so all three ports must be reachable from outside the server.
+  BIND_ADDRESS: 0.0.0.0
+  KEEP_RELEASES: 5
+
+jobs:
+  deploy:
+    name: Build and deploy containers
+    runs-on: [self-hosted, Linux, X64, hackathon]
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Stage release sources
+        run: |
+          set -euo pipefail
+          release_dir="$APP_ROOT/releases/$GITHUB_SHA"
+          mkdir -p "$APP_ROOT/releases"
+          rm -rf "$release_dir"
+          mkdir -p "$release_dir"
+          git archive "$GITHUB_SHA" | tar -x -C "$release_dir"
+          echo "RELEASE_DIR=$release_dir" >> "$GITHUB_ENV"
+
+      - name: Build images
+        working-directory: ${{ env.RELEASE_DIR }}
+        run: |
+          set -euo pipefail
+          for svc in api generator ui; do
+            echo "::group::Build $svc"
+            sudo -n docker build --pull \
+              --file "apps/$svc/Dockerfile" \
+              --label "io.hackathon.project=$PROJECT" \
+              --label "io.hackathon.managed-by=github-actions" \
+              --label "io.hackathon.release=$GITHUB_SHA" \
+              --tag "$IMAGE_PREFIX-$svc:$GITHUB_SHA" \
+              --tag "$IMAGE_PREFIX-$svc:latest" \
+              .
+            echo "::endgroup::"
+          done
+
+      - name: Ensure database credentials
+        run: |
+          set -euo pipefail
+          umask 077
+          pg_env="$APP_ROOT/postgres.env"
+          # Generated once on the server and reused so the password matches the existing volume.
+          if [ ! -f "$pg_env" ]; then
+            password="$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+            printf 'POSTGRES_USER=sentinel\nPOSTGRES_PASSWORD=%s\nPOSTGRES_DB=sentinel_db\n' "$password" > "$pg_env"
+          fi
+          set -a; . "$pg_env"; set +a
+          printf 'DATABASE_URL=postgresql+psycopg://%s:%s@postgres:5432/%s\nENVIRONMENT=production\n' \
+            "$POSTGRES_USER" "$POSTGRES_PASSWORD" "$POSTGRES_DB" > "$APP_ROOT/api.env"
+
+      - name: Ensure network and database
+        run: |
+          set -euo pipefail
+          if ! sudo -n docker network inspect "$NETWORK" >/dev/null 2>&1; then
+            sudo -n docker network create \
+              --label "io.hackathon.project=$PROJECT" \
+              --label "io.hackathon.managed-by=github-actions" \
+              "$NETWORK"
+          fi
+
+          # Postgres is long-lived: create it once and leave it running across deploys.
+          if ! sudo -n docker container inspect "$PG_CONTAINER" >/dev/null 2>&1; then
+            sudo -n docker run -d \
+              --name "$PG_CONTAINER" \
+              --network "$NETWORK" --network-alias postgres \
+              --restart unless-stopped \
+              --env-file "$APP_ROOT/postgres.env" \
+              --volume "$PG_VOLUME:/var/lib/postgresql/data" \
+              --memory 512m \
+              --label "io.hackathon.project=$PROJECT" \
+              --label "io.hackathon.managed-by=github-actions" \
+              --health-cmd 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"' \
+              --health-interval 5s --health-timeout 3s --health-retries 10 \
+              postgres:16-alpine
+          else
+            sudo -n docker start "$PG_CONTAINER" >/dev/null
+          fi
+
+          for _ in $(seq 1 30); do
+            status="$(sudo -n docker inspect -f '{{.State.Health.Status}}' "$PG_CONTAINER")"
+            if [ "$status" = "healthy" ]; then echo "Postgres is healthy"; exit 0; fi
+            sleep 2
+          done
+          echo "::error::Postgres did not become healthy"
+          exit 1
+
+      - name: Deploy application containers
+        run: |
+          set -euo pipefail
+
+          replace() {
+            local name="$1"; shift
+            sudo -n docker rm -f "$name" >/dev/null 2>&1 || true
+            sudo -n docker run -d \
+              --name "$name" \
+              --network "$NETWORK" \
+              --restart unless-stopped \
+              --security-opt no-new-privileges:true \
+              --label "io.hackathon.project=$PROJECT" \
+              --label "io.hackathon.managed-by=github-actions" \
+              --label "io.hackathon.release=$GITHUB_SHA" \
+              "$@"
+          }
+
+          wait_http() {
+            local url="$1"
+            for _ in $(seq 1 45); do
+              if curl -fsS -m 3 "$url" >/dev/null; then echo "Healthy: $url"; return 0; fi
+              sleep 2
+            done
+            echo "::error::$url did not respond"
+            return 1
+          }
+
+          # The API runs migrations on start-up, so bring it up before its clients.
+          replace "$IMAGE_PREFIX-api" \
+            --network-alias api \
+            --env-file "$APP_ROOT/api.env" \
+            --env PORT=8000 --env HOST=0.0.0.0 \
+            --publish "$BIND_ADDRESS:8000:8000" \
+            --memory 512m \
+            "$IMAGE_PREFIX-api:$GITHUB_SHA"
+          wait_http http://127.0.0.1:8000/health
+
+          # The generator image hard-codes http://api:8000, served by the alias above.
+          replace "$IMAGE_PREFIX-generator" \
+            --network-alias generator \
+            --env API_URL=http://api:8000 --env SIM_SPEED=6.0 --env AUTO_START=false \
+            --publish "$BIND_ADDRESS:8001:8001" \
+            --memory 512m \
+            "$IMAGE_PREFIX-generator:$GITHUB_SHA"
+          wait_http http://127.0.0.1:8001/sim/status
+
+          replace "$IMAGE_PREFIX-ui" \
+            --network-alias ui \
+            --env PORT=3000 \
+            --publish "$BIND_ADDRESS:3000:3000" \
+            --memory 128m \
+            "$IMAGE_PREFIX-ui:$GITHUB_SHA"
+          wait_http http://127.0.0.1:3000/
+
+      - name: Record release and prune old ones
+        run: |
+          set -euo pipefail
+          echo "$GITHUB_SHA" > "$APP_ROOT/current-tag"
+
+          ls -1dt "$APP_ROOT"/releases/*/ | tail -n +"$((KEEP_RELEASES + 1))" | xargs -r rm -rf
+
+          for svc in api generator ui; do
+            sudo -n docker images "$IMAGE_PREFIX-$svc" --format '{{.Tag}}' \
+              | grep -v -x -e "$GITHUB_SHA" -e latest \
+              | xargs -r -I{} sudo -n docker rmi "$IMAGE_PREFIX-$svc:{}" || true
+          done
+          sudo -n docker image prune -f >/dev/null
+
+          public_ip="$(hostname -I | awk '{print $1}')"
+          {
+            echo "### Deployed \`${GITHUB_SHA::7}\`"
+            echo "- Dashboard: http://$public_ip:3000"
+            echo "- API docs: http://$public_ip:8000/docs"
+            echo "- Simulation status: http://$public_ip:8001/sim/status"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show container logs on failure
+        if: failure()
+        run: |
+          for name in "$PG_CONTAINER" "$IMAGE_PREFIX-api" "$IMAGE_PREFIX-generator" "$IMAGE_PREFIX-ui"; do
+            echo "::group::$name"
+            sudo -n docker ps -a --filter "name=^$name$" --format '{{.Names}}\t{{.Status}}'
+            sudo -n docker logs --tail 100 "$name" 2>&1 || true
+            echo "::endgroup::"
+          done
