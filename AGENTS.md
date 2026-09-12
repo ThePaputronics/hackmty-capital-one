@@ -14,4 +14,5 @@
 - Features are calculated relative to `as_of` timestamp, never `now()` (reproducible simulated clock).
 - High precision monetary amounts use `Numeric(18, 2)` (never `Float`).
 - Multi-factor corroboration rule governs decisions (`allow` / `challenge` / `pause`); single signals never trigger alone.
+- Write endpoints depend on `require_api_key` (`X-API-Key`, enforced when `API_KEY_REQUIRED=true`); read endpoints stay public for the dashboard.
 - All code, comments, docstrings, and commits are written in English.

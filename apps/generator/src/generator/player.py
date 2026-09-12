@@ -57,6 +57,7 @@ class BankPlayer:
         speed_seconds_per_day: float = 6.0,
         seed: int = 42,
         cancellation_p: float = 0.85,
+        api_key: str | None = None,
     ):
         self.api_url = api_base_url.rstrip("/")
         self.start_date = start_date or datetime(2026, 6, 1, 0, 0, 0)
@@ -81,7 +82,9 @@ class BankPlayer:
             speed_seconds_per_day=self.speed,
             cancellation_probability_p=self.cancellation_p,
         )
-        self._http_client = httpx.Client(timeout=10.0)
+        # The API requires the institution key on writes when enforcement is enabled.
+        headers = {"X-API-Key": api_key} if api_key else {}
+        self._http_client = httpx.Client(timeout=10.0, headers=headers)
 
     def run_warmup(self) -> int:
         """Transmit historical warmup events to the API to establish baseline histories."""

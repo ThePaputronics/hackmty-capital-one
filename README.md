@@ -57,6 +57,8 @@ By evaluating behavioral shifts, session telemetry, MTU regulatory cap structuri
 | `GET` | `/v1/evaluations/{id}` | Drill-down detail with full signal breakdowns and mobile screen copy |
 | `GET` | `/health` | Service health and active ruleset version |
 
+When `API_KEY_REQUIRED=true`, the three `POST` endpoints require the institution key in the `X-API-Key` header (`INSTITUTION_API_KEY` on the API, `API_KEY` on the generator). The deployed stack enforces it; local Compose leaves it off. The `GET` endpoints stay public so the dashboard can read the feed.
+
 ---
 
 ## 4. Quickstart

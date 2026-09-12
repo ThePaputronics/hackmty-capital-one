@@ -18,8 +18,9 @@ logger = logging.getLogger("generator-server")
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
 SPEED = float(os.environ.get("SIM_SPEED", "6.0"))
 AUTO_START = os.environ.get("AUTO_START", "false").lower() in ("true", "1", "yes")
+API_KEY = os.environ.get("API_KEY") or None
 
-player = BankPlayer(api_base_url=API_URL, speed_seconds_per_day=SPEED)
+player = BankPlayer(api_base_url=API_URL, speed_seconds_per_day=SPEED, api_key=API_KEY)
 sim_thread: threading.Thread | None = None
 
 
@@ -70,7 +71,7 @@ def start_simulation() -> dict[str, str]:
         return {"status": "already_running", "state": player.status.state}
 
     # Reset player for fresh run
-    player = BankPlayer(api_base_url=API_URL, speed_seconds_per_day=SPEED)
+    player = BankPlayer(api_base_url=API_URL, speed_seconds_per_day=SPEED, api_key=API_KEY)
     sim_thread = threading.Thread(target=run_simulation_worker, daemon=True)
     sim_thread.start()
     return {"status": "started", "state": "warming_up"}
@@ -87,7 +88,7 @@ def main():
 
     args = parser.parse_args()
     global player, sim_thread
-    player = BankPlayer(api_base_url=args.api_url, speed_seconds_per_day=args.speed)
+    player = BankPlayer(api_base_url=args.api_url, speed_seconds_per_day=args.speed, api_key=API_KEY)
 
     if args.run_now:
         sim_thread = threading.Thread(target=run_simulation_worker, daemon=True)

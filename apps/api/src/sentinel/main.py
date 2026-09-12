@@ -1,15 +1,17 @@
 """Main FastAPI application entry point for Sentinel."""
 
 import logging
+import secrets
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, Security, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.security import APIKeyHeader
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
@@ -61,6 +63,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+api_key_header = APIKeyHeader(
+    name="X-API-Key",
+    auto_error=False,
+    description="Institution API key, required on write endpoints when API_KEY_REQUIRED is enabled.",
+)
+
+
+def require_api_key(api_key: str | None = Security(api_key_header)) -> None:
+    """Reject writes that lack the institution API key when enforcement is enabled."""
+    if not settings.api_key_required:
+        return
+    if not api_key or not secrets.compare_digest(api_key.encode(), settings.institution_api_key.encode()):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API key",
+            headers={"WWW-Authenticate": "APIKey"},
+        )
+
 
 @app.get("/health", tags=["System"])
 def health_check() -> dict[str, str]:
@@ -75,7 +95,13 @@ def health_check() -> dict[str, str]:
 
 # --- Ledger Event Ingestion ---
 
-@app.post("/v1/events", response_model=EventIngestResponse, status_code=status.HTTP_201_CREATED, tags=["Ledger"])
+@app.post(
+    "/v1/events",
+    response_model=EventIngestResponse,
+    status_code=status.HTTP_201_CREATED,
+    tags=["Ledger"],
+    dependencies=[Depends(require_api_key)],
+)
 def ingest_event(
     payload: EventCreate | EventBatchCreate,
     db: Session = Depends(get_db),
@@ -118,7 +144,12 @@ def ingest_event(
 
 # --- Pre-submission Evaluation ---
 
-@app.post("/v1/evaluate", response_model=EvaluateResponse, tags=["Sentinel"])
+@app.post(
+    "/v1/evaluate",
+    response_model=EvaluateResponse,
+    tags=["Sentinel"],
+    dependencies=[Depends(require_api_key)],
+)
 def evaluate_transfer(
     request: EvaluateRequest,
     db: Session = Depends(get_db),
@@ -216,6 +247,7 @@ def evaluate_transfer(
     response_model=OutcomeResponse,
     status_code=status.HTTP_201_CREATED,
     tags=["Sentinel"],
+    dependencies=[Depends(require_api_key)],
 )
 def report_outcome(
     evaluation_id: int,

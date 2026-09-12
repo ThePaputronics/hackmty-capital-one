@@ -79,6 +79,15 @@ jobs:
           printf 'DATABASE_URL=postgresql+psycopg://%s:%s@postgres:5432/%s\nENVIRONMENT=production\n' \
             "$POSTGRES_USER" "$POSTGRES_PASSWORD" "$POSTGRES_DB" > "$APP_ROOT/api.env"
 
+          # Write endpoints require this key; generated once so API clients keep a stable value.
+          key_env="$APP_ROOT/institution-api-key.env"
+          if [ ! -f "$key_env" ]; then
+            printf 'INSTITUTION_API_KEY=%s\n' "$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')" > "$key_env"
+          fi
+          . "$key_env"
+          printf 'API_KEY_REQUIRED=true\nINSTITUTION_API_KEY=%s\n' "$INSTITUTION_API_KEY" >> "$APP_ROOT/api.env"
+          printf 'API_KEY=%s\n' "$INSTITUTION_API_KEY" > "$APP_ROOT/generator.env"
+
           # Kept in the 0600 env file rather than on the docker command line, where `ps` would show it.
           if [ -n "$GEMINI_API_KEY" ]; then
             printf 'GEMINI_API_KEY=%s\n' "$GEMINI_API_KEY" >> "$APP_ROOT/api.env"
@@ -163,6 +172,7 @@ jobs:
           # The generator image hard-codes http://api:8000, served by the alias above.
           replace "$IMAGE_PREFIX-generator" \
             --network-alias generator \
+            --env-file "$APP_ROOT/generator.env" \
             --env API_URL=http://api:8000 --env SIM_SPEED=6.0 --env AUTO_START=false \
             --publish "$BIND_ADDRESS:8001:8001" \
             --memory 512m \
