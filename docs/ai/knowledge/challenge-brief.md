@@ -79,7 +79,7 @@ The direction below was the decision of record until 2026-09-12. It is kept
 because the reasoning still explains why both tracks remain in scope.
 
 The active direction is the **hybrid** described in
-[`CAPITAL-ONE-NEEDS.md` §4.2](../../../CAPITAL-ONE-NEEDS.md): a consumer
+[`CAPITAL-ONE-NEEDS.md` §4.2](../use-cases/CAPITAL-ONE-NEEDS.md): a consumer
 financial-wellness coach as the product surface, with real-time anomaly and
 fraud detection as one agent inside it. The owner confirmed this on 2026-09-11,
 reconciling two inputs that pointed in different directions:
