@@ -2,7 +2,10 @@
 
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+DEFAULT_DATABASE_URL = "postgresql+psycopg://spei:spei@localhost:5433/spei_intent_guard"
 
 
 class Settings(BaseSettings):
@@ -20,14 +23,17 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
-    # API settings
-    api_prefix: str = "/api"
-    api_version: str = "v1"
+    # Database settings. This is the single source of truth for the database URL:
+    # app/database.py and migrations/env.py both read it from here.
+    database_url: str = DEFAULT_DATABASE_URL
 
-    # Database settings
-    database_url: str = (
-        "postgresql+psycopg://postgres:postgres@localhost:5432/spei-intent-guard-api"
-    )
+    @field_validator("database_url")
+    @classmethod
+    def _require_psycopg_driver(cls, value: str) -> str:
+        """Pin Postgres URLs to the installed psycopg driver."""
+        if value.startswith("postgresql://"):
+            return value.replace("postgresql://", "postgresql+psycopg://", 1)
+        return value
 
 
 @lru_cache

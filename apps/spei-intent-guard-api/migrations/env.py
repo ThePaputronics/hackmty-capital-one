@@ -1,6 +1,5 @@
 """Alembic migration environment configuration."""
 
-import os
 from logging.config import fileConfig
 
 from alembic import context
@@ -10,34 +9,23 @@ from sqlalchemy import engine_from_config, pool
 # Load environment variables
 load_dotenv()
 
-
-def get_database_url() -> str:
-    """Return the configured database URL using the installed SQLAlchemy driver."""
-    database_url = os.getenv(
-        "DATABASE_URL",
-        "postgresql+psycopg://postgres:postgres@localhost:5432/spei-intent-guard-api",
-    )
-    if database_url.startswith("postgresql://"):
-        return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
-    return database_url
-
+# alembic.ini sets prepend_sys_path = src, so the app package is importable here.
+from app.models import Base  # noqa: E402
+from app.settings import get_settings  # noqa: E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
 # Override sqlalchemy.url from environment
-config.set_main_option("sqlalchemy.url", get_database_url())
+config.set_main_option("sqlalchemy.url", get_settings().database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-from app.models import Base  # noqa: E402
-
+# add your model's MetaData object here for 'autogenerate' support
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
