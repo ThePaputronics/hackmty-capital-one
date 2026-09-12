@@ -190,9 +190,13 @@
 
 <!-- Script: zero-logic polling and presentation -->
 <script>
-  const host = window.location.hostname || "localhost";
-  const API_URL = `http://${host}:8000`;
-  const GEN_URL = `http://${host}:8001`;
+  // Behind the deployed reverse proxy the API and generator share the page's origin;
+  // the local compose stack (UI on :3000, or the file opened directly) uses their own ports.
+  const { protocol, hostname, port } = window.location;
+  const direct = protocol === "file:" || port === "3000";
+  const host = hostname || "localhost";
+  const API_URL = direct ? `http://${host}:8000` : "";
+  const GEN_URL = direct ? `http://${host}:8001` : "";
 
   const FEED_PAGE_SIZE = 200;
   const FEED_PREVIEW = 8;

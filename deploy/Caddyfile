@@ -1,0 +1,22 @@
+# Public entry point for the deployed stack: terminates TLS for the domain and
+# routes by path to the containers on the project network.
+{$DOMAIN} {
+	encode zstd gzip
+
+	@api path /v1/* /health /docs /docs/* /redoc /openapi.json
+	handle @api {
+		reverse_proxy api:8000
+	}
+
+	handle /sim/* {
+		reverse_proxy generator:8001
+	}
+
+	handle {
+		reverse_proxy ui:3000
+	}
+}
+
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
