@@ -40,19 +40,16 @@ class TemplateExplainer:
             "Te pedimos verificar los datos antes de proceder."
         ),
         "pause_coercion_critical": (
-            "🛑 PAUSA DE SEGURIDAD PROTEGIDA: Detectamos múltiples señales críticas de ingeniería social. "
-            "El dinero saldría de tu cuenta hacia un destinatario desconocido mientras hay actividad de llamada o acceso remoto. "
-            "LOS BANCOS NUNCA SOLICITAN TRANSFERIR DINERO PARA 'PROTEGERLO' NI PARA 'CANCELAR UN CARGO'. "
-            "Recuerda: las transferencias SPEI son inmediatas e irreversibles. "
-            "Te recomendamos colgar la llamada y comunicarte tú directamente a la línea oficial de tu banco al reverso de tu tarjeta."
+            "Pausamos esta transferencia por señales de riesgo durante una llamada o acceso remoto. "
+            "Cuelga y llama a tu banco usando su número oficial."
         ),
         "pause_ato_critical": (
-            "🛑 ACCESO NO RECONOCIDO: Esta transacción se intenta desde un dispositivo nuevo con modificaciones de seguridad recientes. "
-            "Hemos pausado preventivamente esta operación para salvaguardar tus fondos. Revisa la actividad de tu cuenta."
+            "Pausamos esta transferencia por actividad inusual en tu cuenta. "
+            "Revisa tus movimientos y contacta a tu banco por un canal oficial."
         ),
         "pause_generic": (
-            "🛑 PAUSA PREVENTIVA: Esta transferencia reúne múltiples factores de riesgo combinados (monto inusual, destinatario reciente y ritmo atípico). "
-            "Te ofrecemos un periodo de enfriamiento de 15 minutos o una llamada de verificación con un ejecutivo para confirmar que eres tú y deseas enviar este dinero."
+            "Pausamos esta transferencia por varias señales de riesgo. "
+            "Verifica los datos y contacta a tu banco por un canal oficial."
         ),
     }
 
