@@ -71,6 +71,13 @@ a fully autonomous money-mover with no human override (governance red flag).
 
 ## 4. Candidate directions
 
+> **Resolved 2026-09-11:** the owner selected the hybrid in §4.2 — wellness
+> coach as the product surface with anomaly/fraud detection as an agent
+> inside it. See [`docs/ai/knowledge/challenge-brief.md`](docs/ai/knowledge/challenge-brief.md),
+> which is authoritative for the direction and for the sponsor's official
+> track statements. The analysis below is kept as the reasoning behind that
+> choice.
+
 ### 4.1 Primary recommendation — Real-time Agentic Financial Wellness Coach ("FlowGuard")
 
 - **Input stream:** synthetic transactions, balances, recurring charges, credit
@@ -99,8 +106,9 @@ Scored against the sponsor-tool stack in
 | 3 | **Real-time Credit / Rewards Optimizer** — dynamic card routing, limit suggestions, reward maximization with risk checks | Clear $ impact metric | Rewards logic can get fiddly; needs card-product data |
 | 4 | **Customer Journey Observability Tool** — reconstruct real-time customer paths from session/API events, surface friction | Differentiated, internal-facing, matches their observability work | Less emotionally compelling to judges; harder to demo value |
 
-**Hybrid worth considering:** wellness coach as the product surface, with fraud/anomaly
-detection as one agent inside it. Gets both themes without doubling the scope.
+**Hybrid worth considering — selected.** Wellness coach as the product surface, with
+fraud/anomaly detection as one agent inside it. Gets both themes without doubling the
+scope. This is the direction of record; see §4's note.
 
 ---
 
@@ -159,12 +167,17 @@ and mention that in the pitch.
 
 All of the following are unknown from the available material and must not be assumed:
 
-- `TODO: Verify` — exact hackathon rules, official Capital One challenge statement,
-  and published judging rubric / weights.
+- ~~Official Capital One challenge statement~~ — **resolved**: the three sponsor
+  tracks are recorded verbatim in
+  [`docs/ai/knowledge/challenge-brief.md`](docs/ai/knowledge/challenge-brief.md).
+  `TODO: Verify` — exact hackathon rules and published judging rubric / weights
+  remain unknown.
 - `TODO: Verify` — submission deadline and demo format (live demo? video? pitch length?).
 - `TODO: Verify` — team size, member skill sets, and who owns which layer.
 - `TODO: Verify` — required or provided APIs (e.g., a Capital One / Nessie-style
-  sandbox API), and whether external LLM API keys are permitted and funded.
+  sandbox API), and whether external LLM API keys are permitted and funded. The
+  owner holds one sponsor-issued API key locally; its scope and quota are not yet
+  confirmed. The key itself must stay out of the repository.
 - `TODO: Verify` — tech stack preference (Python vs Go vs TypeScript) and whether
   AWS credits / cloud accounts are available, or everything must run locally.
 - `TODO: Verify` — internet reliability at the venue (decides local model vs hosted API).
@@ -175,7 +188,7 @@ All of the following are unknown from the available material and must not be ass
 
 ## 8. Proposed next steps (awaiting "Go On")
 
-1. Lock the idea (default: FlowGuard, optionally with a fraud agent inside).
+1. ~~Lock the idea~~ — **done 2026-09-11**: hybrid per §4.2.
 2. Resolve the open questions in §7, especially rubric, stack, and API availability.
 3. Define the demo narrative first — the 3-minute story judges will see — then build
    backwards from it.

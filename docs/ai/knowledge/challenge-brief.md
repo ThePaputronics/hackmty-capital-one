@@ -35,15 +35,31 @@ hops, or abnormal account behaviors.
 
 ## Selected direction
 
-The repository owner's working note (`capitalOne.md`, untracked) states the
-problem being worked as the **Risk & Security focus** track (track 3,
-Real-Time Anomaly & Security Sentinel). Treat track 3 as the active direction
-and raise a blocker rather than silently switching tracks if a task implies a
-different one.
+The active direction is the **hybrid** described in
+[`CAPITAL-ONE-NEEDS.md` §4.2](../../../CAPITAL-ONE-NEEDS.md): a consumer
+financial-wellness coach as the product surface, with real-time anomaly and
+fraud detection as one agent inside it. The owner confirmed this on 2026-09-11,
+reconciling two inputs that pointed in different directions:
 
-`TODO: Verify` — this is taken from an informal owner note, not a written
-submission decision. Confirm with the owner before any commitment that is
-expensive to reverse.
+- the owner's working note (`capitalOne.md`, untracked) named the **Risk &
+  Security focus** track (track 3, Real-Time Anomaly & Security Sentinel);
+- `CAPITAL-ONE-NEEDS.md` §4.1 recommended a wellness coach ("FlowGuard"),
+  closer to track 1, and ranked a pure anomaly co-pilot as its first
+  alternative because the theme is crowded.
+
+The hybrid carries both themes without doubling scope. It means:
+
+- the demo's primary surface is consumer-facing financial wellness — proactive
+  nudges, runway forecasting, subscription and recurring-spend detection;
+- anomaly and transfer-velocity detection is a first-class agent in that
+  pipeline, not a separate product, and its alerts surface through the same
+  coach interface;
+- the submission track should be chosen to match whichever half the finished
+  demo actually leads with. `TODO: Verify` — the track is not yet committed on
+  a submission form.
+
+Do not drop either half, or re-scope to a single track, on your own initiative.
+Raise a blocker instead.
 
 ## Owner-stated constraints
 
@@ -67,6 +83,9 @@ expensive to reverse.
 - Detection and scoring logic must be able to run on a transaction stream in
   real time, so it belongs behind a queue or stream abstraction rather than in
   request-scoped background threads (see `docs/ai/knowledge/aws-scalability.md`).
+- The anomaly agent and the coaching agents read the same enriched event
+  stream. Design the pipeline so detection is a consumer of that stream rather
+  than a parallel path, or the hybrid degrades into two products.
 - Transaction ledgers are sensitive financial data. Apply
   `.agents/skills/security-baseline/SKILL.md` and route privacy-affecting
   decisions through the `privacy-compliance` role before they are implemented.
@@ -78,5 +97,9 @@ expensive to reverse.
 
 - Challenge tracks: sponsor-provided problem statement, relayed verbatim by the
   repository owner in the session that created this document.
-- Selected track and constraints: `capitalOne.md`, the owner's untracked
-  working note at the repository root.
+- Constraints and the initial track signal: `capitalOne.md`, the owner's
+  untracked working note at the repository root.
+- Candidate directions and the hybrid framing: `CAPITAL-ONE-NEEDS.md`, itself
+  synthesized from `CAPITAL-ONE-RAW.md`. Tooling feasibility for these
+  directions is assessed in `FEASIBLE-TOOLS.md`.
+- Hybrid selection: owner decision, 2026-09-11.
