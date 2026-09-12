@@ -2,7 +2,7 @@
 
 ## Tech Stack
 - Python >=3.11, FastAPI, SQLAlchemy 2.0, Alembic, Pydantic v2, PostgreSQL (or SQLite for tests)
-- Vanilla HTML/JS for dashboard UI with Tailwind CSS (zero logic in frontend)
+- Vanilla HTML/JS for dashboard UI styled with the Classical design-system stylesheet `apps/ui/styles.css` (zero logic in frontend)
 
 ## Commands
 - Run API tests: `PYTHONPATH=apps/api/src pytest apps/api/tests -v`

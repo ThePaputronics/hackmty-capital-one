@@ -73,7 +73,7 @@ docker compose up --build
 - **Sentinel API & Swagger Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
 - **Simulation Status:** [http://localhost:8001/sim/status](http://localhost:8001/sim/status)
 
-Click **"▶ Iniciar Demo"** on the dashboard to start the live 30-day accelerated replay.
+Click **"Iniciar demo"** on the dashboard to start the live 30-day accelerated replay.
 
 ### Option B: Local Python Development
 
