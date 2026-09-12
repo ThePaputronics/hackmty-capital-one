@@ -117,15 +117,24 @@ It should never say:
 - Real movement of money.
 - Automatic account freezing, permanent blocking, or irreversible rejection.
 - Automatic reversal or recovery after SPEI settlement.
-- A private blacklist or permanent reputation score for a person, CLABE, CURP, RFC, or beneficiary.
+- A private blacklist or permanent reputation score for a **person**, CURP, RFC, or beneficiary identity.
 - Scraping CONDUSEF reports or treating complaints as confirmed fraud evidence.
-- A public or cross-bank scammer registry.
 - Capturing call audio, messages, contacts, clipboard contents, screenshots, or private communications.
 - Using age, gender, ethnicity, nationality, neighborhood, disability, income level, or other protected/proxy attributes as fraud signals.
 - A full fraud-investigation case-management product.
 - A second dashboard that competes with the primary customer flow.
 - A general budgeting coach, rewards optimizer, subscription manager, and credit-underwriting product all at once.
 - Any action requiring an IFPE, banking, lending, money-transmission, or other regulated license.
+
+> **Corrected 2026-09-12.** "A public or cross-bank scammer registry" was
+> listed here as out of scope. The owner's direction of record adds exactly
+> that as Layer 2 — a **CLABE-scoped** registry holding account-level scores
+> with no person data. See
+> [`spei-guard-direction.md`](../knowledge/spei-guard-direction.md) §7 for the
+> governance rules that make it safe, and
+> [`ADR-0002`](../../architechture/ADR-0002-bank-integrated-api-and-receiver-worker.md)
+> for the architecture. A permanent reputation score attached to a *person*
+> remains out of scope and always will be.
 
 ### Automation boundary
 
@@ -169,15 +178,35 @@ No single signal should label a transaction as fraud. A practical rule is: one s
 
 These are context, not proof. A device replacement, a night transfer, or one large payment can be legitimate.
 
-### Signals for future institutional research, not MVP decisions
+### Receiver-side signals — MVP, computed by the continuous worker
 
-- Recipient fan-in and fan-out across accounts.
-- Rapid cash-out or onward transfer after receiving funds.
+> **Corrected 2026-09-12.** These were listed as "future institutional
+> research, not MVP decisions". Under the rail-operator framing they are core:
+> seeing inbound flows across institutions is what a single bank cannot do and
+> the operator can. See
+> [`ADR-0002`](../../architechture/ADR-0002-bank-integrated-api-and-receiver-worker.md).
+
+- Rapid pass-through: funds leaving within minutes of arriving. **Primary.**
+- Residual balance near zero against large received volume. **Primary.**
+- Recipient fan-in from many distinct, unrelated payers. Secondary.
+- Repeated identical amounts just below the configurable cap. Weak context.
+
+**Weighting is the merchant discriminator.** Fan-in with repeated identical
+amounts describes a gym, a school, a tanda, or any merchant with fixed pricing.
+What distinguishes a mule is that funds do not rest. Pass-through and near-zero
+residual therefore carry roughly 60% of the receiver score combined, and
+repeated identical amounts roughly 10%. Leading with fan-in would flag much of
+the informal economy — named failure mode 4 in the direction note.
+
+A high fan-in account may still be a legitimate merchant, worker, or
+organization, or an unwitting mule victim. The score informs a payer's
+decision; it never blocks an account, and a vulnerable-receiver pattern routes
+to welfare outreach rather than restriction.
+
+### Still out of MVP scope
+
 - Device, phone, or funding-source relationships across multiple accounts.
-- Cross-institution patterns.
 - Confirmed fraud intelligence shared through lawful institutional arrangements.
-
-These signals can be useful to a bank's investigation or welfare workflow, but they should not create a durable accusation. A high fan-in account may be a legitimate merchant, worker, or organization, or an unwitting mule victim.
 
 ### Signals deliberately excluded
 
