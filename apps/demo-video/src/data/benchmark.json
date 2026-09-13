@@ -1,0 +1,52 @@
+{
+  "run": {
+    "date": "2026-09-12",
+    "seed": 42,
+    "active_days": 30,
+    "warmup_days": 90,
+    "warmup_events": 2940,
+    "payers": 52,
+    "environment": "Local Python 3.14, in-memory SQLite; synthetic data",
+    "command": "PYTHONPATH=apps/api/src:apps/generator/src python tools/evaluate/harness.py --days 30 --seed 42 --json"
+  },
+  "results": {
+    "summary": {
+      "total_transfers_evaluated": 615,
+      "genuine_normal_transfers": 180,
+      "genuine_merchant_transfers": 426,
+      "app_scam_attacks": 6,
+      "ato_attacks": 3,
+      "latency_p50_ms": 2.19,
+      "latency_p95_ms": 3.64
+    },
+    "app_fraud_protection": {
+      "attempts": 6,
+      "intercepted": 6,
+      "detection_recall": 100.0,
+      "value_at_risk_mxn": 146800.0,
+      "value_intercepted_mxn": 146800.0,
+      "value_weighted_recall_pct": 100.0
+    },
+    "ato_protection": {
+      "attempts": 3,
+      "intercepted": 3,
+      "recall_pct": 100.0
+    },
+    "subgroup_false_positive_rates": {
+      "genuine_consumers_fp_rate_pct": 0.0,
+      "small_merchants_fp_rate_pct": 0.0
+    },
+    "architecture_comparison": {
+      "multi_factor_corroboration": {
+        "consumer_fp_pct": 0.0,
+        "merchant_fp_pct": 0.0,
+        "app_recall_pct": 100.0
+      },
+      "naive_weighted_sum_baseline": {
+        "consumer_fp_pct": 0.0,
+        "merchant_fp_pct": 0.0,
+        "app_recall_pct": 100.0
+      }
+    }
+  }
+}

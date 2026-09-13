@@ -1,0 +1,740 @@
+{
+  "total": 615,
+  "case_a": {
+    "id": 359,
+    "day": 18,
+    "payer_id": "merchant_pyme_006",
+    "amount": 8452.22,
+    "destination_clabe": "072180906070000008",
+    "destination_institution": "072",
+    "proposed_at": "2026-09-17T08:12:00",
+    "decision": "allow",
+    "scores": {
+      "ato": 0.0,
+      "intent": 0.0,
+      "recipient": 0.0
+    },
+    "signals": [],
+    "reason_codes": [],
+    "is_app_fraud": false,
+    "is_ato_fraud": false,
+    "playbook": null,
+    "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+  },
+  "case_b": {
+    "id": 53,
+    "day": 3,
+    "payer_id": "victim_target_004",
+    "amount": 12450.0,
+    "destination_clabe": "072180888030000001",
+    "destination_institution": "072",
+    "proposed_at": "2026-09-02T11:30:00",
+    "decision": "pause",
+    "scores": {
+      "ato": 0.0,
+      "intent": 0.8,
+      "recipient": 0.7
+    },
+    "signals": [
+      {
+        "key": "amount_drastically_exceeds_baseline",
+        "signal_group": "intent",
+        "points": 4,
+        "observed": "$12,450.00 MXN solicitados",
+        "baseline": "M\u00e1ximo hist\u00f3rico en 90 d\u00edas: $3,143.33 MXN",
+        "explanation": "El monto solicitado supera dr\u00e1sticamente cualquier transferencia previa realizada por el cliente."
+      },
+      {
+        "key": "beneficiary_registered_moments_ago",
+        "signal_group": "intent",
+        "points": 4,
+        "observed": "Beneficiario dado de alta hace 5.0 minutos",
+        "baseline": "Transferencias habituales a contactos consolidados",
+        "explanation": "La cuenta destino fue registrada hace escasos minutos, t\u00edpico de estafadores guiando el alta en vivo."
+      },
+      {
+        "key": "mtu_regulatory_cap_structuring",
+        "signal_group": "intent",
+        "points": 4,
+        "observed": "$12,450.00 MXN (muy cerca del tope MTU de 1,500 UDIs \u2248 $12,800 MXN)",
+        "baseline": "Montos variados seg\u00fan necesidad",
+        "explanation": "Monto dise\u00f1ado para evitar los filtros autom\u00e1ticos regulatorios del tope MTU."
+      },
+      {
+        "key": "concurrent_active_voice_call",
+        "signal_group": "intent",
+        "points": 4,
+        "observed": "Llamada telef\u00f3nica activa en simult\u00e1neo con la banca m\u00f3vil",
+        "baseline": "Operaciones bancarias habituales sin llamada concurrente",
+        "explanation": "El usuario est\u00e1 en una llamada de voz mientras opera su banca, fuerte indicio de estafa por ingenier\u00eda social (falso ejecutivo/secuestro virtual)."
+      },
+      {
+        "key": "first_time_destination_clabe",
+        "signal_group": "recipient",
+        "points": 3,
+        "observed": "CLABE 072180...0001 nunca antes vista",
+        "baseline": "2 cuentas destino registradas en el historial",
+        "explanation": "Es la primera vez que este pagador env\u00eda dinero a esta CLABE interbancaria."
+      },
+      {
+        "key": "unseen_destination_institution",
+        "signal_group": "recipient",
+        "points": 2,
+        "observed": "Instituci\u00f3n 072 sin antecedentes en esta cuenta",
+        "baseline": "Bancos habituales: 014, 137",
+        "explanation": "El usuario nunca ha operado hacia esta entidad bancaria o fintech receptora."
+      },
+      {
+        "key": "newly_registered_recipient",
+        "signal_group": "recipient",
+        "points": 2,
+        "observed": "Destinatario registrado hace 5.0 minutos",
+        "baseline": "Destinatarios con antig\u00fcedad en la agenda",
+        "explanation": "El beneficiario fue dado de alta escasos momentos antes de la transferencia."
+      }
+    ],
+    "reason_codes": [
+      "HIGH_AMOUNT_ANOMALY",
+      "RAPID_COERCION_PLAYBOOK",
+      "ACTIVE_CALL_MANIPULATION",
+      "MTU_CAP_STRUCTURING",
+      "NEW_DESTINATION_RISK"
+    ],
+    "is_app_fraud": true,
+    "is_ato_fraud": false,
+    "playbook": "mtu_structuring_active_call",
+    "payer_message_es": "Pausamos esta transferencia por se\u00f1ales de riesgo durante una llamada o acceso remoto. Cuelga y llama a tu banco usando su n\u00famero oficial."
+  },
+  "feed_sample": [
+    {
+      "id": 1,
+      "day": 1,
+      "payer_id": "merchant_pyme_003",
+      "amount": 2082.98,
+      "destination_clabe": "012180903000000002",
+      "destination_institution": "012",
+      "proposed_at": "2026-08-31T08:28:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 2,
+      "day": 1,
+      "payer_id": "merchant_pyme_008",
+      "amount": 7930.08,
+      "destination_clabe": "021180908020000007",
+      "destination_institution": "021",
+      "proposed_at": "2026-08-31T08:36:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 3,
+      "day": 1,
+      "payer_id": "merchant_pyme_007",
+      "amount": 1857.73,
+      "destination_clabe": "012180907000000008",
+      "destination_institution": "012",
+      "proposed_at": "2026-08-31T08:50:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 4,
+      "day": 1,
+      "payer_id": "merchant_pyme_002",
+      "amount": 3992.85,
+      "destination_clabe": "002180902000000000",
+      "destination_institution": "002",
+      "proposed_at": "2026-08-31T09:08:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 5,
+      "day": 1,
+      "payer_id": "payer_normal_007",
+      "amount": 2606.97,
+      "destination_clabe": "127180007010000003",
+      "destination_institution": "127",
+      "proposed_at": "2026-08-31T09:12:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 6,
+      "day": 1,
+      "payer_id": "payer_normal_020",
+      "amount": 2349.29,
+      "destination_clabe": "021180020020000008",
+      "destination_institution": "021",
+      "proposed_at": "2026-08-31T09:36:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 7,
+      "day": 1,
+      "payer_id": "payer_normal_025",
+      "amount": 620.22,
+      "destination_clabe": "137180025000000001",
+      "destination_institution": "137",
+      "proposed_at": "2026-08-31T09:40:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 8,
+      "day": 1,
+      "payer_id": "payer_normal_009",
+      "amount": 529.18,
+      "destination_clabe": "137180009010000004",
+      "destination_institution": "137",
+      "proposed_at": "2026-08-31T10:22:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 9,
+      "day": 1,
+      "payer_id": "merchant_pyme_008",
+      "amount": 8368.48,
+      "destination_clabe": "021180908050000006",
+      "destination_institution": "021",
+      "proposed_at": "2026-08-31T10:38:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 10,
+      "day": 1,
+      "payer_id": "payer_normal_026",
+      "amount": 544.68,
+      "destination_clabe": "002180026000000009",
+      "destination_institution": "002",
+      "proposed_at": "2026-08-31T11:07:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 11,
+      "day": 1,
+      "payer_id": "payer_normal_013",
+      "amount": 1889.42,
+      "destination_clabe": "137180013000000000",
+      "destination_institution": "137",
+      "proposed_at": "2026-08-31T11:49:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 12,
+      "day": 1,
+      "payer_id": "merchant_pyme_007",
+      "amount": 1956.5,
+      "destination_clabe": "127180907040000005",
+      "destination_institution": "127",
+      "proposed_at": "2026-08-31T12:11:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 13,
+      "day": 1,
+      "payer_id": "merchant_pyme_009",
+      "amount": 7382.17,
+      "destination_clabe": "021180909050000005",
+      "destination_institution": "021",
+      "proposed_at": "2026-08-31T13:46:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 14,
+      "day": 1,
+      "payer_id": "payer_normal_008",
+      "amount": 852.53,
+      "destination_clabe": "021180008010000001",
+      "destination_institution": "021",
+      "proposed_at": "2026-08-31T15:41:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 15,
+      "day": 1,
+      "payer_id": "merchant_pyme_006",
+      "amount": 3662.39,
+      "destination_clabe": "002180906060000004",
+      "destination_institution": "002",
+      "proposed_at": "2026-08-31T16:00:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 16,
+      "day": 1,
+      "payer_id": "merchant_pyme_004",
+      "amount": 6030.54,
+      "destination_clabe": "012180904050000006",
+      "destination_institution": "012",
+      "proposed_at": "2026-08-31T16:48:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 17,
+      "day": 1,
+      "payer_id": "merchant_pyme_005",
+      "amount": 1470.27,
+      "destination_clabe": "137180905030000007",
+      "destination_institution": "137",
+      "proposed_at": "2026-08-31T17:12:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 18,
+      "day": 1,
+      "payer_id": "merchant_pyme_009",
+      "amount": 2140.29,
+      "destination_clabe": "002180909030000002",
+      "destination_institution": "002",
+      "proposed_at": "2026-08-31T17:12:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 19,
+      "day": 1,
+      "payer_id": "merchant_pyme_010",
+      "amount": 6424.42,
+      "destination_clabe": "072180910010000009",
+      "destination_institution": "072",
+      "proposed_at": "2026-08-31T17:38:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 20,
+      "day": 1,
+      "payer_id": "merchant_pyme_005",
+      "amount": 2645.04,
+      "destination_clabe": "137180905030000007",
+      "destination_institution": "137",
+      "proposed_at": "2026-08-31T17:47:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 21,
+      "day": 1,
+      "payer_id": "merchant_pyme_010",
+      "amount": 7116.39,
+      "destination_clabe": "012180910000000008",
+      "destination_institution": "012",
+      "proposed_at": "2026-08-31T18:00:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 22,
+      "day": 1,
+      "payer_id": "merchant_pyme_001",
+      "amount": 2040.71,
+      "destination_clabe": "137180901000000002",
+      "destination_institution": "137",
+      "proposed_at": "2026-08-31T18:05:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 23,
+      "day": 1,
+      "payer_id": "merchant_pyme_006",
+      "amount": 4524.01,
+      "destination_clabe": "127180906020000000",
+      "destination_institution": "127",
+      "proposed_at": "2026-08-31T18:51:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 24,
+      "day": 1,
+      "payer_id": "payer_normal_011",
+      "amount": 2473.62,
+      "destination_clabe": "021180011010000001",
+      "destination_institution": "021",
+      "proposed_at": "2026-08-31T18:57:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 25,
+      "day": 1,
+      "payer_id": "payer_normal_018",
+      "amount": 1468.82,
+      "destination_clabe": "072180018000000005",
+      "destination_institution": "072",
+      "proposed_at": "2026-08-31T19:55:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 26,
+      "day": 2,
+      "payer_id": "merchant_pyme_001",
+      "amount": 1436.4,
+      "destination_clabe": "072180901040000004",
+      "destination_institution": "072",
+      "proposed_at": "2026-09-01T08:07:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 27,
+      "day": 2,
+      "payer_id": "merchant_pyme_010",
+      "amount": 2281.36,
+      "destination_clabe": "012180910000000008",
+      "destination_institution": "012",
+      "proposed_at": "2026-09-01T08:55:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 28,
+      "day": 2,
+      "payer_id": "merchant_pyme_005",
+      "amount": 4369.55,
+      "destination_clabe": "072180905070000009",
+      "destination_institution": "072",
+      "proposed_at": "2026-09-01T09:02:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 29,
+      "day": 2,
+      "payer_id": "merchant_pyme_004",
+      "amount": 4700.87,
+      "destination_clabe": "014180904040000001",
+      "destination_institution": "014",
+      "proposed_at": "2026-09-01T09:08:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    },
+    {
+      "id": 30,
+      "day": 2,
+      "payer_id": "merchant_pyme_005",
+      "amount": 1633.61,
+      "destination_clabe": "127180905080000009",
+      "destination_institution": "127",
+      "proposed_at": "2026-09-01T09:51:00",
+      "decision": "allow",
+      "scores": {
+        "ato": 0.0,
+        "intent": 0.0,
+        "recipient": 0.0
+      },
+      "signals": [],
+      "reason_codes": [],
+      "is_app_fraud": false,
+      "is_ato_fraud": false,
+      "playbook": null,
+      "payer_message_es": "Transferencia validada de manera habitual. No se detectaron anomal\u00edas en tu operaci\u00f3n."
+    }
+  ]
+}
