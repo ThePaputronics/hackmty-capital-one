@@ -1,6 +1,6 @@
 # F.R.E.D open SPEI detection engine presentation
 
-Spanish, seven-slide, five-minute executive pitch with a five-second animated opener, large projection typography,
+Spanish, five-slide, executive pitch with a five-second animated opener, large projection typography,
 high-level and low-level architecture, business impact, proposed AWS scaling, Open Banking positioning, and an IEEE references slide. F.R.E.D is the product
 name; Sentinel remains the technical package name in the repository.
 
@@ -25,7 +25,7 @@ load from Google Fonts, with Georgia as the offline fallback.
 - Hash links open individual slides, such as `#high-level` and `#low-level`.
 - Mobile screens scroll within each slide to preserve readable typography.
 - Without JavaScript, slides appear in a continuous document.
-- Print/PDF keeps the seven content slides plus references, omitting the animated opener and controls.
+- Print/PDF keeps the five content slides plus references, omitting the animated opener and controls.
 
 `speech.md` provides the timed five-minute pitch: 5-second opener + 30 + 45 + 45 + 40 + 60 + 45 + 30 seconds.
 `sources.md` records evidence, assumptions, rubric coverage and pending work.

@@ -81,7 +81,7 @@ PYTHONPATH=apps/api/src:apps/generator/src python tools/evaluate/harness.py --da
 
 ## Pitch ejecutivo de cinco minutos
 
-La versión actual tiene siete diapositivas de pitch más un opener y una diapositiva de referencias IEEE: escala SPEI, benchmark ejecutado,
+La versión actual tiene cinco diapositivas de pitch más un opener y una diapositiva de referencias IEEE: visión, propuesta, escala SPEI, benchmark ejecutado,
 funcionamiento continuo, valor para producto/negocio, escala AWS propuesta,
 ruta de migración y petición de piloto. Se retiraron la persona ficticia, el
 recorrido narrativo y las explicaciones repetidas. Los tiempos del speech
